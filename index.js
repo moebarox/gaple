@@ -463,10 +463,16 @@ const calculatePenalty = (match, penalty, lastTurn) => {
   })
 
   if (!zeroCardExists && doubleZeroCardOwnerId) {
+    console.log(
+      `Player ${players[doubleZeroCardOwnerId].name} have double 0 card and got ${LAST_BALAK_POINT} penalty point`
+    )
     players[doubleZeroCardOwnerId].penalty = players[doubleZeroCardOwnerId].penalty + LAST_BALAK_POINT
   }
 
   if (!sixCardExists && doubleSixCardOwnerId) {
+    console.log(
+      `Player ${players[doubleSixCardOwnerId].name} have double 6 card and got ${LAST_BALAK_POINT} penalty point`
+    )
     players[doubleSixCardOwnerId].penalty = players[doubleSixCardOwnerId].penalty + LAST_BALAK_POINT
   }
 
