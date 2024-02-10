@@ -1,4 +1,5 @@
 const FORBIDDEN_FIRST_TURN_CARDS = ['0|0', '6|6']
+const POWERFULL_LAST_CARDS = ['0|0', '6|6']
 const DEFAULT_MATCH = {
   settings: {
     password: '',
@@ -13,6 +14,10 @@ const DEFAULT_MATCH = {
     lastRoundCard: '',
   },
 }
+const SKIP_POINT = 1
+const GAPLE_POINT = 2
+const POLDAN_POINT = 1
+const LAST_BALAK_POINT = 2
 
 const db = firebase.firestore()
 let unsubWaitForPlayer
@@ -138,12 +143,12 @@ const nextRound = (id, match) => {
     p => p.cards.includes(`${head}|${tail}`) || p.cards.includes(`${tail}|${head}`)
   )
 
-  // TODO: handle game over scoring
+  const players = calculatePenalty(match, GAPLE_POINT)
 
   db.collection('matches')
     .doc(id)
     .update({
-      players: match.players,
+      players,
       'state.board': [],
       'state.round': match.state.round + 1,
       'state.turn': match.players[firstTurnIdx].id,
@@ -283,13 +288,6 @@ const handleTurn = doc => {
   }
 
   playerData.cards.splice(idx, 1)
-  const players = match.players.map(p => {
-    if (p.id === user.id) {
-      return playerData
-    } else {
-      return p
-    }
-  })
 
   const userIdx = match.players.findIndex(p => p.id === user.id)
   const nextPlayer = match.players[(userIdx + 1) % 4]
@@ -297,16 +295,28 @@ const handleTurn = doc => {
   if (playerData.cards.length === 0) {
     console.log('You win!')
 
-    // TODO: handle game over scoring
+    const players = calculatePenalty(match, POLDAN_POINT, { playerId: playerData.id, lastCard: card })
 
     db.collection('matches')
       .doc(id)
       .update({
+        players,
+        'state.board': [],
         'state.round': match.state.round + 1,
         'state.turn': user.id,
+        'state.lastTurn': '',
+        'state.lastRoundCard': '',
       })
     return
   }
+
+  const players = match.players.map(p => {
+    if (p.id === user.id) {
+      return playerData
+    } else {
+      return p
+    }
+  })
 
   console.log('NEXT PLAYER:', nextPlayer.name)
 
@@ -338,7 +348,7 @@ const skipTurn = (id, match, player) => {
     } else if (p.id === player.id) {
       return {
         ...p,
-        penalty: p.penalty + 1,
+        penalty: p.penalty + SKIP_POINT,
       }
     } else {
       return p
@@ -404,38 +414,75 @@ const checkGameOver = match => {
   return match.players.every(p => findPossibleCard(p.cards, head, tail).length === 0)
 }
 
-const getLosers = (match, penalty) => {
-  let highestValue = 0
+const calculatePenalty = (match, penalty, lastTurn) => {
+  let highestCardValue = 0
+  let zeroCardExists = false
+  let doubleZeroCardOwnerId = null
+  let sixCardExists = false
+  let doubleSixCardOwnerId = null
+
   const players = match.players.reduce((acc, p) => {
     const cards = p.cards
     const cardValues = cards.reduce((acc, c) => {
+      if (c === '0|0') {
+        doubleZeroCardOwnerId = p.id
+      } else if (c.includes('0')) {
+        zeroCardExists = true
+      }
+
+      if (c === '6|6') {
+        doubleSixCardOwnerId = p.id
+      } else if (c.includes('6')) {
+        sixCardExists = true
+      }
+
       const [h, t] = c.split('|')
       return acc + parseInt(h) + parseInt(t)
     }, 0)
-    highestValue = Math.max(highestValue, cardValues)
 
-    return [...acc, { id: p.id, name: p.name, count: cards.length, value: cardValues }]
-  }, [])
+    highestCardValue = Math.max(highestCardValue, cardValues)
 
-  let loserCandidates = players.filter(p => p.value === highestValue)
-  const maxCount = Math.max(...loserCandidates.map(p => p.count))
-  loserCandidates = loserCandidates.filter(p => p.count === maxCount)
-
-  const losers = loserCandidates.map(p => {
     return {
-      id: p.id,
-      name: p.name,
-      penalty,
+      ...acc,
+      [id]: {
+        id: p.id,
+        name: p.name,
+        count: cards.length,
+        value: cardValues,
+        penalty: 0,
+      },
     }
+  }, {})
+
+  let loserCandidates = Object.values(players).filter(p => p.value === highestCardValue)
+  const highestCardCount = Math.max(...loserCandidates.map(p => p.count))
+  loserCandidates = loserCandidates.filter(p => p.count === highestCardCount)
+
+  loserCandidates.forEach(lc => {
+    players[lc.id].penalty = players[lc.id].penalty + penalty
   })
 
-  // CHECKPOINT
+  if (!zeroCardExists && doubleZeroCardOwnerId) {
+    players[doubleZeroCardOwnerId].penalty = players[doubleZeroCardOwnerId].penalty + LAST_BALAK_POINT
+  }
 
-  // TODO: handle last round card 0|0 or 6|6
+  if (!sixCardExists && doubleSixCardOwnerId) {
+    players[doubleSixCardOwnerId].penalty = players[doubleSixCardOwnerId].penalty + LAST_BALAK_POINT
+  }
 
-  // TODO: handle no pair of 0|0 or 6|6
+  if (lastTurn && POWERFULL_LAST_CARDS.includes(lastTurn.lastCard)) {
+    console.log(`All other players got ${LAST_BALAK_POINT} penalty point`)
+    Object.values(players).forEach(p => {
+      if (p.id !== lastTurn.playerId) {
+        p.penalty = p.penalty + LAST_BALAK_POINT
+      }
+    })
+  }
 
-  return losers
+  return match.players.map(p => {
+    p.penalty = p.penalty + playerPenalty[p.id].penalty
+    return p
+  })
 }
 
 const getUser = () => {
