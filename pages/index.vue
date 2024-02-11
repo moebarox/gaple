@@ -6,16 +6,56 @@
 </template>
 
 <script setup lang="ts">
-const router = useRouter()
+import { collection, addDoc } from 'firebase/firestore'
 
-const createMatch = () => {
-  console.log('createMatch')
+import { DEFAULT_MATCH } from '~/constants/match'
+
+const router = useRouter()
+const { $db } = useNuxtApp()
+
+const createMatch = async () => {
+  const user = getUser()
+  const password = prompt('Enter password:')
+
+  if (password === null) {
+    return
+  }
+
+  const docRef = await addDoc(collection($db, 'matches'), {
+    ...DEFAULT_MATCH,
+    players: [
+      {
+        id: user.id,
+        name: user.name,
+        cards: [],
+        penalty: 0,
+      },
+    ],
+    settings: {
+      ...DEFAULT_MATCH.settings,
+      password: password?.trim(),
+      roomMaster: user.id,
+    },
+  })
+  router.replace({
+    name: 'id',
+    params: {
+      id: docRef.id,
+    },
+  })
 }
+
 const joinMatch = () => {
+  const id = prompt('Enter match id:')
+
+  if (!id) {
+    return
+  }
+
   router.push({
     name: 'id',
     params: {
-      id: 'wG771ZdkxhEg9Sm0WSle',
+      id,
     },
   })
 }

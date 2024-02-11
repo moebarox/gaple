@@ -1,16 +1,64 @@
 <template>
-  <div>ID: {{ $route.params.id }}</div>
+  <div>
+    <template v-if="players.length > 0">
+      <GameScreen v-if="isStarted" />
+      <WaitingScreen v-else @start="handleStartMatch" />
+    </template>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { doc, getDoc } from 'firebase/firestore'
+import { doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore'
 
+import { MAX_PLAYERS } from '~/constants/match'
+import type { TMatch } from '~/types/match'
+
+const router = useRouter()
 const route = useRoute()
 const { $db } = useNuxtApp()
 
+const match = ref<TMatch>({} as TMatch)
+
+const players = computed(() => match.value?.players ?? [])
+const isStarted = computed(() => match.value?.state?.round > 0)
+
+const handleStartMatch = (palyload: TMatch) => {
+  match.value = palyload
+}
+
 onMounted(async () => {
   const id: string = route.params.id as string
-  const match = await getDoc(doc($db, 'matches', id))
-  console.log(match)
+  const docSnap = await getDoc(doc($db, 'matches', id))
+
+  if (!docSnap.exists()) {
+    router.replace({ name: 'index' })
+  }
+
+  match.value = docSnap.data() as TMatch
+  if (match.value.settings.password) {
+    const password = prompt('Enter password:')
+    if (password !== match.value.settings.password) {
+      alert('Incorrect password!')
+      return
+    }
+  }
+
+  const user = getUser()
+  if (players.value.length >= MAX_PLAYERS && !players.value.some(p => p.id === user.id)) {
+    alert('Match is full!')
+    router.replace({ name: 'index' })
+    return
+  }
+
+  if (!players.value.some(p => p.id === user.id)) {
+    updateDoc(doc($db, 'matches', id), {
+      players: arrayUnion({
+        id: user.id,
+        name: user.name,
+        cards: [],
+        penalty: 0,
+      }),
+    })
+  }
 })
 </script>
