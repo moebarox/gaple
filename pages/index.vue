@@ -6,10 +6,17 @@
 </template>
 
 <script setup lang="ts">
+const router = useRouter()
+
 const createMatch = () => {
   console.log('createMatch')
 }
 const joinMatch = () => {
-  console.log('joinMatch')
+  router.push({
+    name: 'id',
+    params: {
+      id: 'wG771ZdkxhEg9Sm0WSle',
+    },
+  })
 }
 </script>
