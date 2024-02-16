@@ -57,7 +57,7 @@ const startMatch = async () => {
   })
 }
 
-const handleWaitForPlayers = (doc: any) => {
+const handleWaitForPlayers = doc => {
   match.value = doc.data()
 
   if (match.value.state.round !== 0) {

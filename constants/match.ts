@@ -14,3 +14,13 @@ export const DEFAULT_MATCH = {
     lastRoundCard: '',
   },
 }
+
+export enum TURN_STATE {
+  pickCard = 'PICK_CARD',
+  selectPosition = 'SELECT_POSITION',
+}
+
+export enum BOARD_POSITION {
+  head = 'HEAD',
+  tail = 'TAIL',
+}
