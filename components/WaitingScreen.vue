@@ -22,9 +22,6 @@
 <script setup lang="ts">
 import { doc, onSnapshot, updateDoc } from 'firebase/firestore'
 
-import { MAX_PLAYERS } from '~/constants/match'
-import type { TMatch } from '~/types/match'
-
 const emits = defineEmits<{
   (e: 'start', match: TMatch): void
 }>()
@@ -45,22 +42,25 @@ const startMatch = async () => {
   }
 
   const shuffledCards = shuffleCards()
-  const playersWithCards = players.value.map((player, index) => ({
+  const playersWithCards = players.value.map(player => ({
     ...player,
     cards: shuffledCards.splice(0, 7),
   }))
 
+  const firstTurnPlayer = findCardOwner(playersWithCards, FIRST_TURN_CARD)
+
   updateDoc(doc($db, 'matches', route.params.id as string), {
     players: playersWithCards,
     'state.round': 1,
-    'state.turn': user.id,
+    'state.turn': firstTurnPlayer?.id,
+    'state.firstTurnCard': FIRST_TURN_CARD,
   })
 }
 
 const handleWaitForPlayers = doc => {
   match.value = doc.data()
 
-  if (match.value.state.round !== 0) {
+  if (match.value?.state.round !== 0) {
     emits('start', match.value)
   }
 }

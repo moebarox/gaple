@@ -8,8 +8,6 @@
 <script setup lang="ts">
 import { collection, addDoc } from 'firebase/firestore'
 
-import { DEFAULT_MATCH } from '~/constants/match'
-
 const router = useRouter()
 const { $db } = useNuxtApp()
 

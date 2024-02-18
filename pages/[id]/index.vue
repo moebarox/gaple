@@ -10,9 +10,6 @@
 <script setup lang="ts">
 import { doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore'
 
-import { MAX_PLAYERS } from '~/constants/match'
-import type { TMatch } from '~/types/match'
-
 const router = useRouter()
 const route = useRoute()
 const { $db } = useNuxtApp()
@@ -35,9 +32,9 @@ onMounted(async () => {
   }
 
   match.value = docSnap.data() as TMatch
-  if (match.value.settings.password) {
+  if (match.value?.settings?.password) {
     const password = prompt('Enter password:')
-    if (password !== match.value.settings.password) {
+    if (password !== match.value?.settings?.password) {
       alert('Incorrect password!')
       return
     }

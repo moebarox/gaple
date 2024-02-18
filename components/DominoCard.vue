@@ -5,15 +5,14 @@
       'opacity-50': isDisabled,
       'cursor-pointer': isSelectable,
     }"
-    :disabled="isDisabled"
-    @click="$emit('select', card)"
+    @click="handleClick"
   >
     {{ card }}
   </div>
 </template>
 
 <script setup lang="ts">
-withDefaults(
+const props = withDefaults(
   defineProps<{
     card: string
     isDisabled?: boolean
@@ -24,4 +23,16 @@ withDefaults(
     isSelectable: false,
   }
 )
+
+const emits = defineEmits<{
+  (e: 'select', card: string): void
+}>()
+
+const handleClick = () => {
+  if (props.isDisabled || !props.isSelectable) {
+    return
+  }
+
+  emits('select', props.card)
+}
 </script>

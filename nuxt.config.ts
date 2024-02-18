@@ -14,4 +14,7 @@ export default defineNuxtConfig({
       autoprefixer: {},
     },
   },
+  imports: {
+    dirs: ['constants', 'types'],
+  },
 })

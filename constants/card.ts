@@ -1,5 +1,25 @@
+/**
+ * First card that must be placed on the board
+ * on the first turn of the round
+ */
+export const FIRST_TURN_CARD = '1|1'
+
+/**
+ * The cards that can't be placed on the board
+ * on the first turn of the round
+ */
 export const FORBIDDEN_FIRST_TURN_CARDS = ['0|0', '6|6']
-export const POWERFULL_LAST_CARDS = ['0|0', '6|6']
+
+/**
+ * Cards that if placed to finish the game
+ * will cause the other player to receive a penalty
+ */
+export const ULTIMATE_LAST_CARD = ['0|0', '6|6']
+
+/**
+ * List of domino cards.
+ * Has a total of 28 cards.
+ */
 export const DEFAULT_CARDS = [
   '0|0',
   '0|1',

@@ -7,6 +7,7 @@ export type TMatchPlayer = {
   id: string
   name: string
   cards: string[]
+  penalty: number
 }
 
 export type TMatchState = {
@@ -14,11 +15,16 @@ export type TMatchState = {
   round: number
   turn: string
   lastTurn: string
-  lastRoundCard: string
+  firstTurnCard: string
 }
 
 export type TMatch = {
   settings: TMatchSettings
   players: TMatchPlayer[]
   state: TMatchState
+}
+
+export type TLastTurn = {
+  playerId: string
+  lastCard: string
 }

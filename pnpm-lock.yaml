@@ -7,6 +7,9 @@ devDependencies:
   firebase:
     specifier: ^10.8.0
     version: 10.8.0
+  lodash:
+    specifier: ^4.17.21
+    version: 4.17.21
   nuxt:
     specifier: ^3.10.1
     version: 3.10.1(vite@5.1.1)

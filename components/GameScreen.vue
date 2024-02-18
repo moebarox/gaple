@@ -1,16 +1,39 @@
 <template>
   <div class="relative flex justify-center items-center w-screen h-screen">
-    <BoardCards :cards="board" :is-selectable="state === TURN_STATE.selectPosition" @select="handleSelectPosition" />
+    <BoardCards
+      :cards="board"
+      :is-selectable="!isMatchOver && isPlayerTurn && state === TURN_STATE.selectPosition"
+      @select="handleSelectPosition"
+    />
 
-    <div class="absolute bottom-0 w-full p-4">
-      <div v-if="isPlayerTurn" class="text-center text-gray-400 mb-4">Your turn!</div>
+    <div class="absolute bottom-0 w-full p-4 text-center">
+      <div v-if="isMatchOver" class="mb-4">
+        <button v-if="isRoomMaster" class="rounded bg-green-500 text-white px-4 py-2" @click="nextRound">
+          Start Next Round!
+        </button>
+        <div v-else class="text-red-400">Game over! Waiting for room master to start a new match...</div>
+      </div>
+      <div
+        v-else
+        class="mb-4"
+        :class="{
+          'text-green-400': isPlayerTurn,
+          'text-gray-400': !isPlayerTurn,
+        }"
+      >
+        <template v-if="isPlayerTurn">Your turn!</template>
+        <template v-else>{{ findPlayer(players, match.state?.turn)?.name }}'s turn</template>
+      </div>
       <div class="flex justify-center gap-4">
         <DominoCard
           v-for="card in player.cards"
           :key="card"
           :card="card"
-          :is-selectable="isSelectable(card)"
-          :is-disabled="isPlayerTurn && !selectableCards.includes(card)"
+          :is-selectable="!isMatchOver && isSelectable(card)"
+          :is-disabled="!isMatchOver && isPlayerTurn && !selectableCards.includes(card)"
+          :class="{
+            '-translate-y-4': card === selectedCard,
+          }"
           @select="handleSelectCard"
         />
       </div>
@@ -19,31 +42,39 @@
 </template>
 
 <script setup lang="ts">
-import { doc, onSnapshot, updateDoc } from 'firebase/firestore'
+import { doc, onSnapshot, updateDoc, increment } from 'firebase/firestore'
 
-import { FORBIDDEN_FIRST_TURN_CARDS } from '~/constants/card'
-import { BOARD_POSITION, TURN_STATE } from '~/constants/match'
-import type { TMatch, TMatchPlayer } from '~/types/match'
+import { TURN_STATE, BOARD_POSITION } from '#imports'
 
 const route = useRoute()
 const { $db } = useNuxtApp()
 const user = getUser()
+
+const matchId = route.params.id as string
 
 const match = ref<TMatch>({} as TMatch)
 const state = ref<TURN_STATE>(TURN_STATE.pickCard)
 const selectedCard = ref('')
 const unsubGameplay = ref()
 
-const board = computed<string[]>(() => match.value.state?.board ?? [])
-const player = computed<TMatchPlayer>(() => match.value.players?.find(p => p.id === user.id) ?? ({} as TMatchPlayer))
-const isPlayerTurn = computed(() => match.value.state?.turn === user.id)
+const board = computed<string[]>(() => match.value?.state?.board ?? [])
+const players = computed<TMatchPlayer[]>(() => match.value?.players ?? [])
+const player = computed<TMatchPlayer>(() => match.value?.players?.find(p => p.id === user.id) ?? ({} as TMatchPlayer))
+const playerIdx = computed(() => match.value?.players?.findIndex(p => p.id === user.id))
+const isRoomMaster = computed(() => match.value?.settings?.roomMaster === user.id)
+const isPlayerTurn = computed(() => match.value?.state?.turn === user.id)
+const isAnyPlayerWin = computed(() => players.value.some(p => p.cards?.length === 0))
+const isMatchDraw = computed(() =>
+  players.value.every(p => getPossibleCards(p.cards, head.value, tail.value).length === 0)
+)
+const isMatchOver = computed(() => isAnyPlayerWin.value || isMatchDraw.value)
 const head = computed<string>(() => board.value[0]?.charAt(0) ?? '')
 const tail = computed<string>(() => board.value[board.value.length - 1]?.charAt(2) ?? '')
 
 const selectableCards = computed<string[]>(() => {
   if (board.value.length === 0) {
-    if (match.value.state?.lastRoundCard) {
-      return [match.value.state?.lastRoundCard]
+    if (match.value?.state?.firstTurnCard) {
+      return [match.value?.state?.firstTurnCard]
     } else {
       return player.value.cards?.filter(c => !FORBIDDEN_FIRST_TURN_CARDS.includes(c)) ?? []
     }
@@ -52,28 +83,50 @@ const selectableCards = computed<string[]>(() => {
   return getPossibleCards(player.value.cards, head.value, tail.value)
 })
 
-const isSelectable = (card: string) =>
-  isPlayerTurn.value && state.value === TURN_STATE.pickCard && selectableCards.value.includes(card)
+const isSelectable = (card: string) => isPlayerTurn.value && selectableCards.value.includes(card)
 
 const handleTurn = doc => {
   match.value = doc.data()
 
-  if (match.value.state.turn !== user.id) {
+  if (match.value?.state.turn !== user.id) {
     return
   }
 
-  if (selectableCards.value.length === 0) {
+  if (selectableCards.value.length === 0 && !isMatchOver.value) {
     skipTurn()
     return
   }
 }
 
 const skipTurn = () => {
-  console.log('skip')
+  const nextPlayer = match.value?.players?.[playerIdx.value + 1] ?? match.value?.players?.[0]
+  const lastTurnPlayer = players.value.find(p => p.id === match.value?.state.lastTurn)
+  const playersWithPenalty = players.value.map(p => {
+    if (p.id === lastTurnPlayer?.id) {
+      return {
+        ...p,
+        penalty: Math.max(p.penalty - SKIP_POINT, 0),
+      }
+    } else if (p.id === user.id) {
+      return {
+        ...p,
+        penalty: p.penalty + SKIP_POINT,
+      }
+    } else {
+      return p
+    }
+  })
+
+  alert('No more possible cards! Skipping turn...')
+
+  updateDoc(doc($db, 'matches', matchId), {
+    players: playersWithPenalty,
+    'state.turn': nextPlayer?.id,
+  })
 }
 
 const handleSelectCard = (card: string) => {
-  if (!isPlayerTurn.value || state.value !== TURN_STATE.pickCard) {
+  if (isMatchOver.value || !isPlayerTurn.value) {
     return
   }
 
@@ -113,10 +166,9 @@ const putCard = async (card: string, position: BOARD_POSITION) => {
     board.value.push(card)
   }
 
-  const playerIdx = match.value.players?.findIndex(p => p.id === user.id)
-  const nextPlayer = match.value.players?.[playerIdx + 1] ?? match.value.players?.[0]
+  const nextPlayer = match.value?.players?.[playerIdx.value + 1] ?? match.value?.players?.[0]
 
-  const players = match.value.players?.map(p => {
+  const updatedPlayers = match.value?.players?.map(p => {
     if (p.id === user.id) {
       return player.value
     } else {
@@ -124,22 +176,82 @@ const putCard = async (card: string, position: BOARD_POSITION) => {
     }
   })
 
-  await updateDoc(doc($db, 'matches', route.params.id as string), {
-    players,
+  const payload = {
+    players: updatedPlayers,
     'state.board': board.value,
     'state.turn': nextPlayer?.id,
     'state.lastTurn': user.id,
-  })
+  }
+
+  if (player.value.cards?.length === 0) {
+    const playersWithPenalty = calculatePenalty(match.value, POLDAN_POINT, {
+      playerId: player.value.id,
+      lastCard: card,
+    })
+
+    payload.players = playersWithPenalty
+    payload['state.turn'] = user.id
+  } else if (isMatchDraw.value) {
+    const playersWithPenalty = calculatePenalty(match.value, GAPLE_POINT)
+
+    payload.players = playersWithPenalty
+    payload['state.turn'] = user.id
+  }
+
+  await updateDoc(doc($db, 'matches', matchId), payload)
 
   endTurn()
 }
 
 const endTurn = () => {
   state.value = TURN_STATE.pickCard
+  selectedCard.value = ''
+}
+
+const nextRound = () => {
+  if (!isRoomMaster.value) {
+    return
+  }
+
+  const shuffledCards = shuffleCards()
+  const playersWithCards = players.value.map(player => ({
+    ...player,
+    cards: shuffledCards.splice(0, 7),
+  }))
+
+  const payload = {
+    players: playersWithCards,
+    'state.board': [],
+    'state.round': increment(1),
+    'state.turn': match.value?.state?.lastTurn,
+    'state.lastTurn': '',
+    'state.firstTurnCard': '',
+  }
+
+  if (isMatchDraw.value) {
+    let lastHead = head.value
+    let lastTail = tail.value
+
+    if (lastHead === '0' && lastTail === '0') {
+      lastHead = '1'
+      lastTail = '1'
+    } else if (lastHead === '6' && lastTail === '6') {
+      lastHead = '5'
+      lastTail = '5'
+    }
+
+    const firstTurnCard = [lastHead, lastTail].sort().join('|')
+    const firstTurnPlayer = playersWithCards.find(p => p.cards.includes(firstTurnCard))
+
+    payload['state.turn'] = firstTurnPlayer!.id
+    payload['state.firstTurnCard'] = firstTurnCard
+  }
+
+  updateDoc(doc($db, 'matches', matchId), payload)
 }
 
 onMounted(() => {
-  unsubGameplay.value = onSnapshot(doc($db, 'matches', route.params.id as string), handleTurn)
+  unsubGameplay.value = onSnapshot(doc($db, 'matches', matchId), handleTurn)
 })
 
 onUnmounted(() => {

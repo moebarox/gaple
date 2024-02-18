@@ -13,6 +13,7 @@
   "devDependencies": {
     "autoprefixer": "^10.4.17",
     "firebase": "^10.8.0",
+    "lodash": "^4.17.21",
     "nuxt": "^3.10.1",
     "postcss": "^8.4.35",
     "prettier": "^3.2.5",
