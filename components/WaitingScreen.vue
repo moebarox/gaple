@@ -1,20 +1,14 @@
 <template>
-  <div class="w-screen h-screen flex flex-col items-center justify-center gap-4">
-    <button
-      v-if="isRoomMaster"
-      class="rounded bg-green-500 text-white px-4 py-2"
-      :class="{ 'cursor-not-allowed opacity-50': players.length < MAX_PLAYERS }"
-      :disabled="players.length < MAX_PLAYERS"
-      @click="startMatch"
-    >
+  <div class="w-screen h-screen flex flex-col items-center justify-center gap-8">
+    <Button v-if="isRoomMaster" variant="primary" :is-disabled="players.length < MAX_PLAYERS" @click="startMatch">
       Start match
-    </button>
-    <div v-else class="text-gray-400">Waiting room master to start the match...</div>
+    </Button>
+    <div v-else class="text-gray-500 animate-pulse">Waiting room master to start the match...</div>
 
     <div class="flex justify-center gap-4">
-      <div v-for="player in players" :key="player.id">
+      <Capsule v-for="player in players" :key="player.id">
         {{ player.name }}
-      </div>
+      </Capsule>
     </div>
   </div>
 </template>

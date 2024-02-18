@@ -1,6 +1,6 @@
 <template>
   <div
-    class="rounded bg-gray-200 px-4 py-2"
+    class="rounded bg-gray-200 text-black px-4 py-2"
     :class="{
       'opacity-50': isDisabled,
       'cursor-pointer': isSelectable,
