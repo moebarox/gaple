@@ -1,6 +1,6 @@
 <template>
   <button
-    class="rounded-xl border-2 bg-gradient-to-r text-white drop-shadow-lg px-6 py-2"
+    class="rounded-2xl border-2 bg-gradient-to-r text-white drop-shadow-lg px-6 py-2"
     :class="{
       'from-green-400 to-green-500': variant === 'primary',
       'border-green-400': variant === 'primary',

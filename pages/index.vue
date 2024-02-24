@@ -1,8 +1,8 @@
 <template>
   <div class="w-screen h-screen flex items-center justify-center">
     <div class="flex flex-wrap justify-center gap-4">
-      <Button variant="primary" @click="createMatch">Create a New Game</Button>
-      <Button variant="secondary" @click="joinMatch">Join Existing Game</Button>
+      <InterfaceButton variant="primary" @click="createMatch">Create a New Game</InterfaceButton>
+      <InterfaceButton variant="secondary" @click="joinMatch">Join Existing Game</InterfaceButton>
     </div>
   </div>
 </template>

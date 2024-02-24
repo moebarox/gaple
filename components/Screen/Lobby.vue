@@ -1,8 +1,13 @@
 <template>
   <div class="w-screen h-screen flex flex-col items-center justify-center gap-8">
-    <Button v-if="isRoomMaster" variant="primary" :is-disabled="players.length < MAX_PLAYERS" @click="startMatch">
+    <InterfaceButton
+      v-if="isRoomMaster"
+      variant="primary"
+      :is-disabled="players.length < MAX_PLAYERS"
+      @click="startMatch"
+    >
       Start match
-    </Button>
+    </InterfaceButton>
     <div v-else class="text-gray-500 animate-pulse">Waiting room master to start the match...</div>
 
     <div class="flex justify-center gap-4">

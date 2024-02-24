@@ -1,6 +1,6 @@
 <template>
   <div class="relative flex justify-center items-center w-screen h-screen">
-    <BoardCards
+    <AssetsBoard
       :cards="board"
       :is-selectable="!isMatchOver && isPlayerTurn && state === TURN_STATE.selectPosition"
       @select="handleSelectPosition"
@@ -25,7 +25,7 @@
         <template v-else>{{ findPlayer(players, match.state?.turn)?.name }}'s turn</template>
       </div>
       <div class="flex justify-center gap-4">
-        <DominoCard
+        <AssetsDomino
           v-for="card in player.cards"
           :key="card"
           :card="card"
@@ -98,7 +98,8 @@ const handleTurn = doc => {
   }
 }
 
-const skipTurn = () => {
+const skipTurn = async () => {
+  await new Promise(resolve => setTimeout(resolve, 1000))
   const nextPlayer = match.value?.players?.[playerIdx.value + 1] ?? match.value?.players?.[0]
   const lastTurnPlayer = players.value.find(p => p.id === match.value?.state.lastTurn)
   const playersWithPenalty = players.value.map(p => {

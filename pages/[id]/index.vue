@@ -1,8 +1,8 @@
 <template>
   <div>
     <template v-if="players.length > 0">
-      <GameScreen v-if="isStarted" />
-      <WaitingScreen v-else @start="handleStartMatch" />
+      <ScreenMatch v-if="isStarted" />
+      <ScreenLobby v-else @start="handleStartMatch" />
     </template>
   </div>
 </template>
