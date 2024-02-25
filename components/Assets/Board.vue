@@ -1,6 +1,6 @@
 <template>
   <div
-    class="absolute top-28 left-28 right-28 bottom-28 bg-[#354566] rounded-full border-[36px] border-[#3d5172] drop-shadow-2xl shadow-inner before:absolute before:top-4 before:left-4 before:right-4 before:bottom-4 before:rounded-full before:border-2 before:border-[#3d5172] before:z-[-1]"
+    class="absolute top-28 left-36 right-36 bottom-28 bg-[#354566] rounded-full border-[36px] border-[#3d5172] drop-shadow-2xl shadow-inner before:absolute before:top-4 before:left-4 before:right-4 before:bottom-4 before:rounded-full before:border-2 before:border-[#3d5172] before:z-[-1]"
   >
     <div ref="innerBoard" class="absolute w-5/6 h-5/6 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
       <template v-for="(cards, rowIdx) in chunkedCards" :key="rowIdx">

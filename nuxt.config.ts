@@ -7,6 +7,7 @@ export default defineNuxtConfig({
       title: 'Gaple Battle',
     },
   },
+  modules: ['@nuxt/image'],
   css: ['~/assets/css/main.css'],
   postcss: {
     plugins: {

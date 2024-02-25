@@ -6,7 +6,15 @@
       @select="handleSelectPosition"
     />
 
-    <div class="absolute bottom-0 w-full p-4 text-center">
+    <AssetsPlayerInfo
+      v-for="(player, idx) in otherPlayers"
+      :key="player.id"
+      :player="player"
+      :position="getPlayerPosition(idx)"
+      :is-highlighted="!isMatchOver && match?.state?.turn === player.id"
+    />
+
+    <div class="absolute p-4 text-center bottom-0 w-full">
       <div v-if="isMatchOver" class="mb-4">
         <button v-if="isRoomMaster" class="rounded bg-green-500 text-white px-4 py-2" @click="nextRound">
           Start Next Round!
@@ -22,11 +30,11 @@
         }"
       >
         <template v-if="isPlayerTurn">Your turn!</template>
-        <template v-else>{{ findPlayer(players, match.state?.turn)?.name }}'s turn</template>
+        <template v-else>{{ findPlayer(players, match?.state?.turn)?.name }}'s turn</template>
       </div>
       <div class="flex justify-center gap-4">
         <AssetsDomino
-          v-for="card in player.cards"
+          v-for="card in currentPlayer.cards"
           :key="card"
           :card="card"
           :is-selectable="!isMatchOver && isSelectable(card)"
@@ -59,7 +67,9 @@ const unsubGameplay = ref()
 
 const board = computed<string[]>(() => match.value?.state?.board ?? [])
 const players = computed<TMatchPlayer[]>(() => match.value?.players ?? [])
-const player = computed<TMatchPlayer>(() => match.value?.players?.find(p => p.id === user.id) ?? ({} as TMatchPlayer))
+const currentPlayer = computed<TMatchPlayer>(
+  () => match.value?.players?.find(p => p.id === user.id) ?? ({} as TMatchPlayer)
+)
 const playerIdx = computed(() => match.value?.players?.findIndex(p => p.id === user.id))
 const isRoomMaster = computed(() => match.value?.settings?.roomMaster === user.id)
 const isPlayerTurn = computed(() => match.value?.state?.turn === user.id)
@@ -76,11 +86,17 @@ const selectableCards = computed<string[]>(() => {
     if (match.value?.state?.firstTurnCard) {
       return [match.value?.state?.firstTurnCard]
     } else {
-      return player.value.cards?.filter(c => !FORBIDDEN_FIRST_TURN_CARDS.includes(c)) ?? []
+      return currentPlayer.value.cards?.filter(c => !FORBIDDEN_FIRST_TURN_CARDS.includes(c)) ?? []
     }
   }
 
-  return getPossibleCards(player.value.cards, head.value, tail.value)
+  return getPossibleCards(currentPlayer.value.cards, head.value, tail.value)
+})
+
+const otherPlayers = computed<TMatchPlayer[]>(() => {
+  const idx = playerIdx.value
+  const players = match.value?.players ?? []
+  return players.slice(idx + 1, players.length).concat(players.slice(0, idx))
 })
 
 const isSelectable = (card: string) => isPlayerTurn.value && selectableCards.value.includes(card)
@@ -152,8 +168,8 @@ const handleSelectPosition = (position: BOARD_POSITION) => {
 }
 
 const putCard = async (card: string, position: BOARD_POSITION) => {
-  const idx = player.value.cards?.indexOf(card)
-  player.value.cards?.splice(idx, 1)
+  const idx = currentPlayer.value.cards?.indexOf(card)
+  currentPlayer.value.cards?.splice(idx, 1)
 
   if (position === BOARD_POSITION.head) {
     if (card.charAt(0) === head.value) {
@@ -171,7 +187,7 @@ const putCard = async (card: string, position: BOARD_POSITION) => {
 
   const updatedPlayers = match.value?.players?.map(p => {
     if (p.id === user.id) {
-      return player.value
+      return currentPlayer.value
     } else {
       return p
     }
@@ -184,9 +200,9 @@ const putCard = async (card: string, position: BOARD_POSITION) => {
     'state.lastTurn': user.id,
   }
 
-  if (player.value.cards?.length === 0) {
+  if (currentPlayer.value.cards?.length === 0) {
     const playersWithPenalty = calculatePenalty(match.value, POLDAN_POINT, {
-      playerId: player.value.id,
+      playerId: currentPlayer.value.id,
       lastCard: card,
     })
 
@@ -249,6 +265,14 @@ const nextRound = () => {
   }
 
   updateDoc(doc($db, 'matches', matchId), payload)
+}
+
+const getPlayerPosition = idx => {
+  return {
+    0: 'right',
+    1: 'top',
+    2: 'left',
+  }[idx]
 }
 
 onMounted(() => {
