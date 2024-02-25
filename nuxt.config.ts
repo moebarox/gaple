@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   app: {
-    baseURL: '/gaple/',
+    baseURL: '/gaple-battle/',
     head: {
       title: 'Gaple Battle',
     },
