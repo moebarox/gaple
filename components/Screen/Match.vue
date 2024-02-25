@@ -1,5 +1,5 @@
 <template>
-  <div class="relative flex justify-center items-center w-screen h-screen">
+  <div class="relative flex justify-center items-center w-screen h-screen overflow-hidden">
     <AssetsBoard
       :cards="board"
       :is-selectable="!isMatchOver && isPlayerTurn && state === TURN_STATE.selectPosition"

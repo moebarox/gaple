@@ -11,9 +11,9 @@
     <div v-else class="text-gray-500 animate-pulse">Waiting room master to start the match...</div>
 
     <div class="flex justify-center gap-4">
-      <Capsule v-for="player in players" :key="player.id">
+      <InterfaceCapsule v-for="player in players" :key="player.id">
         {{ player.name }}
-      </Capsule>
+      </InterfaceCapsule>
     </div>
   </div>
 </template>

@@ -15,7 +15,7 @@
         <div
           class="relative w-20 h-20"
           :class="{
-            'before:w-full before:h-full before:absolute before:top-0 before:left-0 before:rounded-full before:z-[-1] before:animate-ping before:bg-[#2e3d58]':
+            'before:w-full before:h-full before:absolute before:top-0 before:left-0 before:rounded-full before:z-[-1] before:animate-ping before:bg-gray-600':
               isHighlighted,
           }"
         >
@@ -43,12 +43,12 @@
         <div
           class="flex flex-col gap-2"
           :class="{
-            'text-left': ['top', 'left'].includes(position),
-            'text-right': position === 'right',
+            'items-start text-left': ['top', 'left'].includes(position),
+            'items-end text-right': position === 'right',
           }"
         >
           <div class="text-lg font-bold">{{ player.name }}</div>
-          <InterfaceCapsule class="text-sm">RT: {{ player.penalty }}</InterfaceCapsule>
+          <InterfaceCapsule class="text-sm">{{ player.penalty }}</InterfaceCapsule>
         </div>
       </div>
     </div>
