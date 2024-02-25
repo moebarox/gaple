@@ -25,6 +25,7 @@ export const DEFAULT_MATCH = {
     lastTurn: '',
     firstTurnCard: '',
   },
+  expireAt: 0,
 }
 
 /**

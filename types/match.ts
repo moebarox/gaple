@@ -22,6 +22,7 @@ export type TMatch = {
   settings: TMatchSettings
   players: TMatchPlayer[]
   state: TMatchState
+  expireAt: number
 }
 
 export type TLastTurn = {

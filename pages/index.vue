@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import { collection, addDoc } from 'firebase/firestore'
+import { collection, addDoc, Timestamp } from 'firebase/firestore'
 
 const router = useRouter()
 const { $db } = useNuxtApp()
@@ -21,6 +21,7 @@ const createMatch = async () => {
     return
   }
 
+  const expireAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7)
   const docRef = await addDoc(collection($db, 'matches'), {
     ...DEFAULT_MATCH,
     players: [
@@ -36,6 +37,7 @@ const createMatch = async () => {
       password: password?.trim(),
       roomMaster: user.id,
     },
+    expireAt: Timestamp.fromDate(expireAt),
   })
   router.replace({
     name: 'id',
