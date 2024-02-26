@@ -1,11 +1,11 @@
-export const getUser = () => {
+export const getUser = (): TUser => {
   const user = localStorage.getItem('user')
 
   if (user) {
-    return JSON.parse(user)
+    return JSON.parse(user) as TUser
   } else {
-    const name = prompt('Enter your name:')
     const id = Math.random().toString(36).substring(2, 8)
+    const name = getRandomName()
     localStorage.setItem('user', JSON.stringify({ id, name }))
 
     return { id, name }

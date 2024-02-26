@@ -7,7 +7,7 @@ export default defineNuxtConfig({
       title: 'Gaple Battle!',
     },
   },
-  modules: ['@nuxt/image'],
+  modules: ['@nuxt/image', '@nuxt/ui'],
   css: ['~/assets/css/main.css'],
   postcss: {
     plugins: {
@@ -18,4 +18,5 @@ export default defineNuxtConfig({
   imports: {
     dirs: ['constants/**/*.ts', 'types/**/*.ts'],
   },
+  watch: ['constants/**/*.ts', 'types/**/*.ts'],
 })

@@ -9,6 +9,16 @@ export const DOUBLE_CARD_TRESHOLD = 4
 export const MAX_PLAYERS = 4
 
 /**
+ * Minimum password character length
+ */
+export const MIN_PASSWORD_LENGTH = 4
+
+/**
+ * Match expire time in milliseconds (1 week)
+ */
+export const MATCH_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7
+
+/**
  * Default values for the match.
  * Struct based on the Firestore document.
  */
