@@ -1,15 +1,15 @@
 <template>
-  <div class="absolute p-4 text-center" :class="`player-info-${position}`">
+  <div class="absolute p-4 text-center" :class="`player-info-${PLAYER_INFO_POSITION[position]}`">
     <div
       class="flex items-center justify-center h-full"
       :class="{
-        'flex-col': ['left', 'right'].includes(position),
+        'flex-col': isPositionLeft || isPositionRight,
       }"
     >
       <div
         class="flex gap-4"
         :class="{
-          'flex-row-reverse': position === 'right',
+          'flex-row-reverse': isPositionRight,
         }"
       >
         <div
@@ -28,8 +28,8 @@
           <div
             class="absolute top-2/3 flex stacked-card"
             :class="{
-              'right-0': position === 'right',
-              'left-0': ['top', 'left'].includes(position),
+              'right-0': isPositionRight,
+              'left-0': isPositionTop || isPositionLeft,
             }"
           >
             <div
@@ -43,8 +43,8 @@
         <div
           class="flex flex-col gap-2"
           :class="{
-            'items-start text-left': ['top', 'left'].includes(position),
-            'items-end text-right': position === 'right',
+            'items-start text-left': isPositionTop || isPositionLeft,
+            'items-end text-right': isPositionRight,
           }"
         >
           <div class="text-lg font-bold">{{ player.name }}</div>
@@ -56,11 +56,17 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{
+import { PLAYER_INFO_POSITION } from '#imports'
+
+const props = defineProps<{
   player: TMatchPlayer
-  position: 'left' | 'top' | 'right'
+  position: PLAYER_INFO_POSITION
   isHighlighted: boolean
 }>()
+
+const isPositionLeft = computed(() => props.position === PLAYER_INFO_POSITION.left)
+const isPositionTop = computed(() => props.position === PLAYER_INFO_POSITION.top)
+const isPositionRight = computed(() => props.position === PLAYER_INFO_POSITION.right)
 </script>
 
 <style scoped lang="scss">

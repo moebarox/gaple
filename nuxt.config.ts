@@ -4,7 +4,7 @@ export default defineNuxtConfig({
   app: {
     baseURL: '/gaple-battle/',
     head: {
-      title: 'Gaple Battle',
+      title: 'Gaple Battle!',
     },
   },
   modules: ['@nuxt/image'],
@@ -16,6 +16,6 @@ export default defineNuxtConfig({
     },
   },
   imports: {
-    dirs: ['constants', 'types'],
+    dirs: ['constants/**/*.ts', 'types/**/*.ts'],
   },
 })

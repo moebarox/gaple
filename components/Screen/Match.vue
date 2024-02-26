@@ -10,7 +10,7 @@
       v-for="(player, idx) in otherPlayers"
       :key="player.id"
       :player="player"
-      :position="getPlayerPosition(idx)"
+      :position="idx"
       :is-highlighted="!isMatchOver && match?.state?.turn === player.id"
     />
 
@@ -20,17 +20,6 @@
           Start Next Round!
         </button>
         <div v-else class="text-red-400">Game over! Waiting for room master to start a new match...</div>
-      </div>
-      <div
-        v-else
-        class="mb-4"
-        :class="{
-          'text-green-400': isPlayerTurn,
-          'text-gray-400': !isPlayerTurn,
-        }"
-      >
-        <template v-if="isPlayerTurn">Your turn!</template>
-        <template v-else>{{ findPlayer(players, match?.state?.turn)?.name }}'s turn</template>
       </div>
       <div class="flex justify-center gap-4">
         <AssetsDomino
@@ -45,6 +34,20 @@
           @select="handleSelectCard"
         />
       </div>
+      <div class="absolute flex gap-4 right-4 bottom-10">
+        <div class="flex flex-col items-end gap-2">
+          <div class="text-lg font-bold">{{ currentPlayer.name }}</div>
+          <InterfaceCapsule class="text-sm">{{ currentPlayer.penalty }}</InterfaceCapsule>
+        </div>
+        <div class="relative w-20 h-20">
+          <NuxtImg
+            placeholder
+            :src="`https://avatar.iran.liara.run/public/boy?username=${currentPlayer.id}`"
+            :alt="currentPlayer.name"
+            loading="lazy"
+          />
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -52,7 +55,7 @@
 <script setup lang="ts">
 import { doc, onSnapshot, updateDoc, increment } from 'firebase/firestore'
 
-import { TURN_STATE, BOARD_POSITION } from '#imports'
+import { TURN_STATE, BOARD_POSITION, PLAYER_INFO_POSITION } from '#imports'
 
 const route = useRoute()
 const { $db } = useNuxtApp()
@@ -265,14 +268,6 @@ const nextRound = () => {
   }
 
   updateDoc(doc($db, 'matches', matchId), payload)
-}
-
-const getPlayerPosition = idx => {
-  return {
-    0: 'right',
-    1: 'top',
-    2: 'left',
-  }[idx]
 }
 
 onMounted(() => {

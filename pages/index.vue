@@ -1,5 +1,6 @@
 <template>
-  <div class="w-screen h-screen flex items-center justify-center">
+  <div class="w-screen h-screen flex flex-col items-center justify-center gap-8">
+    <img src="/images/logo.png" alt="logo" class="w-[300px]" />
     <div class="flex flex-wrap justify-center gap-4">
       <InterfaceButton variant="primary" @click="createMatch">Create a New Game</InterfaceButton>
       <InterfaceButton variant="secondary" @click="joinMatch">Join Existing Game</InterfaceButton>
