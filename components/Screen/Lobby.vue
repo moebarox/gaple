@@ -1,19 +1,27 @@
 <template>
   <div class="w-screen h-screen flex flex-col items-center justify-center gap-8">
-    <InterfaceButton
+    <!-- TODO: add share match & QR code -->
+    <UButton
       v-if="isRoomMaster"
-      variant="primary"
-      :is-disabled="players.length < MAX_PLAYERS"
+      size="lg"
+      color="primary"
+      variant="solid"
+      :disabled="players.length < MAX_PLAYERS"
       @click="startMatch"
     >
-      Start match
-    </InterfaceButton>
-    <div v-else class="text-gray-500 animate-pulse">Waiting room master to start the match...</div>
+      Start Match
+    </UButton>
+    <div v-else class="flex flex-col items-center gap-4">
+      <div class="text-gray-500 animate-pulse">Waiting room master to start the match...</div>
+      <!-- TODO: handle leave match -->
+      <UButton size="lg" color="red" variant="solid"> Leave Match </UButton>
+    </div>
 
     <div class="flex justify-center gap-4">
-      <InterfaceCapsule v-for="player in players" :key="player.id">
+      <!-- TODO: add kick player -->
+      <UBadge v-for="player in players" :key="player.id" color="black" :ui="{ rounded: 'rounded-full' }">
         {{ player.name }}
-      </InterfaceCapsule>
+      </UBadge>
     </div>
   </div>
 </template>

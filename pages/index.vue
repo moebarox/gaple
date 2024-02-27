@@ -1,9 +1,10 @@
+<!-- TODO: add analytics -->
 <template>
   <div class="w-screen h-screen flex flex-col items-center justify-center gap-8">
     <img src="/images/logo.png" alt="logo" class="w-[300px]" />
     <div class="flex flex-wrap justify-center gap-4">
-      <InterfaceButton variant="primary" @click="openCreateMatchModal">Create a New Game</InterfaceButton>
-      <InterfaceButton variant="secondary" @click="openJoinMatchModal">Join Existing Game</InterfaceButton>
+      <UButton size="lg" color="primary" variant="solid" @click="openCreateMatchModal"> Create a New Game </UButton>
+      <UButton size="lg" color="red" variant="solid" @click="openJoinMatchModal"> Join Existing Game </UButton>
     </div>
   </div>
 
@@ -21,9 +22,16 @@
         <div>Enter password</div>
         <UInput v-model="password" size="lg" />
       </div>
-      <InterfaceButton :is-disabled="isMatchPrivate && password.length < MIN_PASSWORD_LENGTH" type="submit"
-        >Create Game</InterfaceButton
+      <UButton
+        block
+        size="lg"
+        color="primary"
+        variant="solid"
+        type="submit"
+        :disabled="isMatchPrivate && password.length < MIN_PASSWORD_LENGTH"
       >
+        Create Game
+      </UButton>
     </form>
   </UModal>
 
@@ -33,7 +41,7 @@
         <div>Enter match id</div>
         <UInput v-model="matchId" size="lg" />
       </div>
-      <InterfaceButton type="submit">Join Game</InterfaceButton>
+      <UButton block size="lg" color="primary" variant="solid" type="submit">Join Game</UButton>
     </form>
   </UModal>
 </template>
@@ -52,11 +60,12 @@ const password = ref('')
 const matchId = ref('')
 
 const createMatch = async () => {
-  const user = getUser()
-
   if (password.value.trim() === '') {
     return
   }
+
+  setUser(name.value)
+  const user = getUser()
 
   // set expires in 7 days
   const expireAt = new Date(Date.now() + MATCH_EXPIRE_TIME)

@@ -6,17 +6,26 @@
     </template>
   </div>
 
-  <UModal v-model="isPasswordModalOpen" prevent-close>
-    <form class="flex flex-col gap-8 p-8" @submit.prevent="validatePassword">
+  <UModal v-model="isProfileModalOpen" prevent-close>
+    <form class="flex flex-col gap-8 p-8" @submit.prevent="enterMatch">
       <div class="flex flex-col gap-2">
         <div>Enter your name</div>
         <UInput v-model="name" size="lg" />
       </div>
-      <div class="flex flex-col gap-2">
+      <div v-if="match?.settings?.password" class="flex flex-col gap-2">
         <div>Enter password</div>
         <UInput v-model="password" size="lg" />
       </div>
-      <InterfaceButton :is-disabled="password.length < MIN_PASSWORD_LENGTH" type="submit">Enter Game</InterfaceButton>
+      <UButton
+        block
+        size="lg"
+        color="primary"
+        variant="solid"
+        type="submit"
+        :disabled="isRequirePassword && password.length < MIN_PASSWORD_LENGTH"
+      >
+        Enter Game
+      </UButton>
     </form>
   </UModal>
 
@@ -35,33 +44,24 @@ const matchId = route.params.id as string
 
 const match = ref<TMatch>({} as TMatch)
 const isEnteredMatch = ref(false)
-const isPasswordModalOpen = ref(false)
+const isProfileModalOpen = ref(false)
 const name = ref('')
 const password = ref('')
 
 const players = computed(() => match.value?.players ?? [])
 const isStarted = computed(() => match.value?.state?.round > 0)
 const isPlayerNotInMatch = computed(() => !players.value.some(p => p.id === getUser().id))
+const isRequirePassword = computed(() => match.value?.settings?.password !== '')
 
 const handleStartMatch = (palyload: TMatch) => {
   match.value = palyload
 }
 
-const openPasswordModal = () => {
+const openProfileModal = () => {
   const user = getUser()
   name.value = user.name
   password.value = ''
-  isPasswordModalOpen.value = true
-}
-
-const validatePassword = () => {
-  if (password.value !== match.value?.settings?.password) {
-    toast.add({ title: 'Wrong password!', timeout: 2000 })
-    return
-  }
-
-  isPasswordModalOpen.value = false
-  enterMatch()
+  isProfileModalOpen.value = true
 }
 
 const redirectToHome = () => {
@@ -69,6 +69,14 @@ const redirectToHome = () => {
 }
 
 const enterMatch = () => {
+  if (isPlayerNotInMatch.value && isRequirePassword.value && password.value !== match.value?.settings?.password) {
+    toast.add({ title: 'Wrong password!', timeout: 2000 })
+    return
+  }
+
+  isProfileModalOpen.value = false
+
+  setUser(name.value)
   const user = getUser()
 
   if (players.value.length >= MAX_PLAYERS && isPlayerNotInMatch.value) {
@@ -102,8 +110,8 @@ onMounted(async () => {
   }
 
   match.value = docSnap.data() as TMatch
-  if (match.value?.settings?.password && isPlayerNotInMatch.value) {
-    openPasswordModal()
+  if (isPlayerNotInMatch.value) {
+    openProfileModal()
     return
   }
 

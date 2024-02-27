@@ -19,11 +19,10 @@
               isHighlighted,
           }"
         >
-          <NuxtImg
-            placeholder
+          <UAvatar
+            size="3xl"
             :src="`https://avatar.iran.liara.run/public/boy?username=${player.id}`"
             :alt="player.name"
-            loading="lazy"
           />
           <div
             class="absolute top-2/3 flex stacked-card"
@@ -48,7 +47,9 @@
           }"
         >
           <div class="text-lg font-bold">{{ player.name }}</div>
-          <InterfaceCapsule class="text-sm">{{ player.penalty }}</InterfaceCapsule>
+          <UBadge color="black" :ui="{ rounded: 'rounded-full' }">
+            {{ player.penalty }}
+          </UBadge>
         </div>
       </div>
     </div>

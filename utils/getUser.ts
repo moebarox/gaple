@@ -1,3 +1,9 @@
+/**
+ * Retrieves the user data from localStorage. If the user data is not found, generates a random user ID and name,
+ * stores it in localStorage, and returns the generated user data.
+ *
+ * @return {TUser} The user data retrieved from localStorage or the generated user data.
+ */
 export const getUser = (): TUser => {
   const user = localStorage.getItem('user')
 

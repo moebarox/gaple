@@ -37,14 +37,15 @@
       <div class="absolute flex gap-4 right-4 bottom-10">
         <div class="flex flex-col items-end gap-2">
           <div class="text-lg font-bold">{{ currentPlayer.name }}</div>
-          <InterfaceCapsule class="text-sm">{{ currentPlayer.penalty }}</InterfaceCapsule>
+          <UBadge color="black" :ui="{ rounded: 'rounded-full' }">
+            {{ currentPlayer.penalty }}
+          </UBadge>
         </div>
         <div class="relative w-20 h-20">
-          <NuxtImg
-            placeholder
+          <UAvatar
+            size="3xl"
             :src="`https://avatar.iran.liara.run/public/boy?username=${currentPlayer.id}`"
             :alt="currentPlayer.name"
-            loading="lazy"
           />
         </div>
       </div>
