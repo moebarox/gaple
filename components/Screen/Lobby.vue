@@ -1,20 +1,16 @@
 <template>
   <div class="w-screen h-screen flex flex-col items-center justify-center gap-8">
     <!-- TODO: add share match & QR code -->
-    <UButton
-      v-if="isRoomMaster"
-      size="lg"
-      color="primary"
-      variant="solid"
-      :disabled="players.length < MAX_PLAYERS"
-      @click="startMatch"
-    >
-      Start Match
-    </UButton>
+    <div v-if="isRoomMaster" class="flex flex-col items-center gap-4">
+      <div>Need {{ MAX_PLAYERS - players.length }} more players to start the match</div>
+      <UButton size="lg" color="primary" variant="solid" :disabled="players.length < MAX_PLAYERS" @click="startMatch">
+        Start Match
+      </UButton>
+    </div>
     <div v-else class="flex flex-col items-center gap-4">
       <div class="text-gray-500 animate-pulse">Waiting room master to start the match...</div>
       <!-- TODO: handle leave match -->
-      <UButton size="lg" color="red" variant="solid"> Leave Match </UButton>
+      <UButton size="lg" color="red" variant="solid">Leave Match</UButton>
     </div>
 
     <div class="flex justify-center gap-4">
