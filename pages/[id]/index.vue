@@ -29,13 +29,13 @@
     </form>
   </UModal>
 
-  <UNotifications />
+  <UNotifications :ui="{ position: 'bottom-40 left-1/2 -translate-x-1/2' }" />
 </template>
 
 <script setup lang="ts">
 import { doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore'
 
-import { MAX_PLAYERS, MIN_PASSWORD_LENGTH } from '#imports'
+import { MAX_PLAYERS, MIN_PASSWORD_LENGTH, DEFAULT_TOAST_TIMEOUT } from '#imports'
 
 const router = useRouter()
 const route = useRoute()
@@ -72,7 +72,7 @@ const redirectToHome = () => {
 
 const enterMatch = () => {
   if (isPlayerNotInMatch.value && isRequirePassword.value && password.value !== match.value?.settings?.password) {
-    toast.add({ title: 'Wrong password!', timeout: 2000 })
+    toast.add({ title: 'Wrong password!', timeout: DEFAULT_TOAST_TIMEOUT })
     return
   }
 

@@ -1,10 +1,12 @@
+export type TPlayerId = string
+
 export type TMatchSettings = {
   password: string
-  roomMaster: string
+  roomMaster: TPlayerId
 }
 
 export type TMatchPlayer = {
-  id: string
+  id: TPlayerId
   name: string
   cards: string[]
   penalty: number
@@ -13,9 +15,10 @@ export type TMatchPlayer = {
 export type TMatchState = {
   board: string[]
   round: number
-  turn: string
-  lastTurn: string
+  turn: TPlayerId
+  lastTurn: TPlayerId
   firstTurnCard: string
+  rt: TPlayerId
 }
 
 export type TMatch = {
@@ -26,6 +29,6 @@ export type TMatch = {
 }
 
 export type TLastTurn = {
-  playerId: string
+  playerId: TPlayerId
   lastCard: string
 }

@@ -56,11 +56,20 @@
 <script setup lang="ts">
 import { doc, onSnapshot, updateDoc, increment } from 'firebase/firestore'
 
-import { TURN_STATE, BOARD_POSITION, FORBIDDEN_FIRST_TURN_CARDS, SKIP_POINT, GAPLE_POINT, POLDAN_POINT } from '#imports'
+import {
+  TURN_STATE,
+  BOARD_POSITION,
+  FORBIDDEN_FIRST_TURN_CARDS,
+  SKIP_POINT,
+  GAPLE_POINT,
+  POLDAN_POINT,
+  DEFAULT_TOAST_TIMEOUT,
+} from '#imports'
 
 const route = useRoute()
 const { $db } = useNuxtApp()
 const user = getUser()
+const toast = useToast()
 
 const matchId = route.params.id as string
 
@@ -105,7 +114,7 @@ const otherPlayers = computed<TMatchPlayer[]>(() => {
 
 const isSelectable = (card: string) => isPlayerTurn.value && selectableCards.value.includes(card)
 
-const handleTurn = doc => {
+const handleTurn = async doc => {
   match.value = doc.data()
 
   if (match.value?.state.turn !== user.id) {
@@ -113,13 +122,29 @@ const handleTurn = doc => {
   }
 
   if (selectableCards.value.length === 0 && !isMatchOver.value) {
-    skipTurn()
+    await new Promise(resolve => setTimeout(resolve, 1000))
+
+    toast.add({
+      title: 'No more possible cards! Skipping turn...',
+      timeout: 5000,
+      click: () => {
+        skipTurn()
+      },
+      callback: () => {
+        skipTurn()
+      },
+    })
+
     return
   }
+
+  toast.add({
+    title: 'Your turn!',
+    timeout: DEFAULT_TOAST_TIMEOUT,
+  })
 }
 
-const skipTurn = async () => {
-  await new Promise(resolve => setTimeout(resolve, 1000))
+const skipTurn = () => {
   const nextPlayer = match.value?.players?.[playerIdx.value + 1] ?? match.value?.players?.[0]
   const lastTurnPlayer = players.value.find(p => p.id === match.value?.state.lastTurn)
   const playersWithPenalty = players.value.map(p => {
@@ -138,8 +163,6 @@ const skipTurn = async () => {
     }
   })
 
-  alert('No more possible cards! Skipping turn...')
-
   updateDoc(doc($db, 'matches', matchId), {
     players: playersWithPenalty,
     'state.turn': nextPlayer?.id,
@@ -151,12 +174,22 @@ const handleSelectCard = (card: string) => {
     return
   }
 
+  if (card === selectedCard.value) {
+    selectedCard.value = ''
+    state.value = TURN_STATE.pickCard
+    return
+  }
+
   const canPlaceOnHead = card.includes(head.value)
   const canPlaceOnTail = card.includes(tail.value)
 
   if (board.value.length !== 0 && canPlaceOnHead && canPlaceOnTail && head.value !== tail.value) {
     selectedCard.value = card
     state.value = TURN_STATE.selectPosition
+    toast.add({
+      title: 'Please select where to place card on the board!',
+      timeout: DEFAULT_TOAST_TIMEOUT,
+    })
     return
   }
 

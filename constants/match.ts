@@ -34,6 +34,7 @@ export const DEFAULT_MATCH: TMatch = {
     turn: '',
     lastTurn: '',
     firstTurnCard: '',
+    rt: '',
   },
   expireAt: 0,
 }

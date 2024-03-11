@@ -3,15 +3,22 @@
     class="absolute top-28 left-36 right-36 bottom-28 bg-[#354566] rounded-full border-8 border-[#3d5172] drop-shadow-2xl shadow-inner before:absolute before:top-4 before:left-4 before:right-4 before:bottom-4 before:rounded-full before:border-2 before:border-[#3d5172] before:z-[-1]"
   >
     <div ref="innerBoard" class="absolute w-5/6 h-5/6 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-      <template v-for="(cards, rowIdx) in chunkedCards" :key="rowIdx">
-        <template v-for="(card, cardIdx) in cards" :key="card">
+      <template v-for="(cards, rowIdx) in chunkedCards">
+        <template v-for="(card, cardIdx) in cards">
           <div
-            v-if="Object.values(BOARD_POSITION).includes(card)"
+            v-if="Object.values(BOARD_POSITION).includes(BOARD_POSITION[card])"
             class="absolute rounded-md bg-[#2e3d58] border-[1px] border-dashed border-[#3d5172] cursor-pointer w-[35px] h-[70px] z-10 before:absolute before:top-0 before:left-0 before:right-0 before:bottom-0 before:rounded-md before:animate-ping before:bg-[#2e3d58] before:pointer-events-none"
             :style="generateCardStyle(rowIdx, cardIdx)"
             @click="handleSelect(card)"
           ></div>
-          <AssetsDomino v-else :card="card" size="small" class="absolute" :style="generateCardStyle(rowIdx, cardIdx)" />
+          <AssetsDomino
+            v-else
+            :key="card"
+            :card="card"
+            size="small"
+            class="absolute"
+            :style="generateCardStyle(rowIdx, cardIdx)"
+          />
         </template>
       </template>
     </div>
@@ -46,27 +53,27 @@ const innerBoardCenterHorizontal = ref(0)
 const cardPerRow = ref(0)
 
 const chunkedCards = computed<string[][]>(() => {
-  if (props.cards.length <= cardPerRow.value) {
-    return [props.cards]
-  }
-
   const clonedCards = [...props.cards]
-  const firstSize = Math.ceil((props.cards.length % cardPerRow.value) / 2)
-  const firstArray = clonedCards.splice(0, firstSize)
-  const remainingArray = chunk(clonedCards, cardPerRow.value)
-  const chunkedCards = [firstArray, ...remainingArray].filter(arr => arr.length > 0)
+  let chunkedCards = [clonedCards]
+
+  if (props.cards.length > cardPerRow.value) {
+    const firstSize = Math.ceil((props.cards.length % cardPerRow.value) / 2)
+    const firstArray = clonedCards.splice(0, firstSize)
+    const remainingArray = chunk(clonedCards, cardPerRow.value)
+    chunkedCards = [firstArray, ...remainingArray].filter(arr => arr.length > 0)
+  }
 
   if (props.isSelectable) {
     if (chunkedCards[0].length >= cardPerRow.value) {
-      chunkedCards.unshift([BOARD_POSITION.head])
+      chunkedCards.unshift([BOARD_POSITION[BOARD_POSITION.head]])
     } else {
-      chunkedCards[0].unshift(BOARD_POSITION.head)
+      chunkedCards[0].unshift(BOARD_POSITION[BOARD_POSITION.head])
     }
 
     if (chunkedCards[chunkedCards.length - 1].length >= cardPerRow.value) {
-      chunkedCards.push([BOARD_POSITION.tail])
+      chunkedCards.push([BOARD_POSITION[BOARD_POSITION.tail]])
     } else {
-      chunkedCards[chunkedCards.length - 1].push(BOARD_POSITION.tail)
+      chunkedCards[chunkedCards.length - 1].push(BOARD_POSITION[BOARD_POSITION.tail])
     }
   }
 
@@ -126,7 +133,7 @@ const isCardReversed = card => card.at(0) > card.at(2)
 const handleSelect = position => {
   if (!props.isSelectable) return
 
-  emits('select', position as BOARD_POSITION)
+  emits('select', BOARD_POSITION[position as keyof typeof BOARD_POSITION])
 }
 
 const calculateBoardSize = () => {
