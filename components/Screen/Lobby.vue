@@ -25,6 +25,8 @@
 <script setup lang="ts">
 import { doc, onSnapshot, updateDoc } from 'firebase/firestore'
 
+import { FIRST_TURN_CARD, MAX_PLAYERS } from '#imports'
+
 const emits = defineEmits<{
   (e: 'start', match: TMatch): void
 }>()

@@ -35,6 +35,8 @@
 <script setup lang="ts">
 import { doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore'
 
+import { MAX_PLAYERS, MIN_PASSWORD_LENGTH } from '#imports'
+
 const router = useRouter()
 const route = useRoute()
 const toast = useToast()

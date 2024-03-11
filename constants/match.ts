@@ -22,7 +22,7 @@ export const MATCH_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7
  * Default values for the match.
  * Struct based on the Firestore document.
  */
-export const DEFAULT_MATCH = {
+export const DEFAULT_MATCH: TMatch = {
   settings: {
     password: '',
     roomMaster: '',

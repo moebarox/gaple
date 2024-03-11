@@ -1,3 +1,5 @@
+import { ULTIMATE_LAST_CARD, LAST_BALAK_POINT } from '#imports'
+
 type TPlayerStatistic = TMatchPlayer & {
   count: number
   value: number

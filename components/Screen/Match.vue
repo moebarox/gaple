@@ -56,7 +56,7 @@
 <script setup lang="ts">
 import { doc, onSnapshot, updateDoc, increment } from 'firebase/firestore'
 
-import { TURN_STATE, BOARD_POSITION, PLAYER_INFO_POSITION } from '#imports'
+import { TURN_STATE, BOARD_POSITION, FORBIDDEN_FIRST_TURN_CARDS, SKIP_POINT, GAPLE_POINT, POLDAN_POINT } from '#imports'
 
 const route = useRoute()
 const { $db } = useNuxtApp()

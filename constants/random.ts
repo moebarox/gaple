@@ -1,3 +1,6 @@
+/**
+ * List of default names that will be used for the random name generator
+ */
 export const DEFAULT_NAMES = [
   'Agus',
   'Bambang',
@@ -15,8 +18,10 @@ export const DEFAULT_NAMES = [
   'Maman',
   'Maryono',
   'Solihin',
+  'Sumarno',
   'Supriadi',
   'Suryono',
+  'Susanto',
   'Sutisna',
   'Tatang',
   'Usep',

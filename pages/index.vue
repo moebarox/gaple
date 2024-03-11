@@ -49,6 +49,8 @@
 <script setup lang="ts">
 import { collection, addDoc, Timestamp } from 'firebase/firestore'
 
+import { DEFAULT_MATCH, MATCH_EXPIRE_TIME, MIN_PASSWORD_LENGTH } from '#imports'
+
 const router = useRouter()
 const { $db } = useNuxtApp()
 

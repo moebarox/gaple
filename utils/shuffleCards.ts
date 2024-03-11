@@ -1,5 +1,7 @@
 import chunk from 'lodash/chunk'
 
+import { DEFAULT_CARDS, DOUBLE_CARD_TRESHOLD } from '#imports'
+
 /**
  * Shuffles the cards.
  * It prevents having more than 4 double cards in a row
