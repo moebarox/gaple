@@ -29,6 +29,7 @@
     </form>
   </UModal>
 
+  <UModals />
   <UNotifications :ui="{ position: 'bottom-40 left-1/2 -translate-x-1/2' }" />
 </template>
 

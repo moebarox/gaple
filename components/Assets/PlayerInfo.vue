@@ -1,34 +1,42 @@
 <template>
-  <div class="absolute p-4 text-center" :class="`player-info-${PLAYER_INFO_POSITION[position]}`">
+  <div class="p-2 text-center md:p-4" :class="`player-info-${PLAYER_INFO_POSITION[position]}`">
     <div
       class="flex items-center justify-center h-full"
       :class="{
         'flex-col': isPositionLeft || isPositionRight,
+        'md:justify-start': isPositionBottom,
       }"
     >
       <div
-        class="flex gap-4"
+        class="flex gap-2 md:flex-row md:gap-4"
         :class="{
-          'flex-row-reverse': isPositionRight,
+          'md:flex-row-reverse': isPositionRight,
+          'flex-col': isPositionLeft || isPositionRight,
+          'items-center': isPositionTop || isPositionBottom,
         }"
       >
         <div
-          class="relative w-20 h-20"
+          class="relative w-12 h-12 md:w-20 md:h-20"
           :class="{
             'before:w-full before:h-full before:absolute before:top-0 before:left-0 before:rounded-full before:z-[-1] before:animate-ping before:bg-gray-600':
               isHighlighted,
           }"
         >
           <UAvatar
-            size="3xl"
+            :ui="{ wrapper: '!w-full !h-full' }"
+            img-class="!w-full !h-full"
+            size="xl"
             :src="`https://avatar.iran.liara.run/public/boy?username=${player.id}`"
             :alt="player.name"
+            :chip-text="isRt ? 'RT' : ''"
+            :chip-color="isRt ? 'primary' : null"
           />
           <div
-            class="absolute top-2/3 flex stacked-card"
+            v-if="showCards"
+            class="absolute top-2/3 hidden md:flex stacked-card"
             :class="{
               'right-0': isPositionRight,
-              'left-0': isPositionTop || isPositionLeft,
+              'left-0': isPositionTop || isPositionLeft || isPositionBottom,
             }"
           >
             <div
@@ -40,9 +48,9 @@
         </div>
 
         <div
-          class="flex flex-col gap-2"
+          class="flex flex-col gap-1 md:gap-2"
           :class="{
-            'items-start text-left': isPositionTop || isPositionLeft,
+            'items-start text-left': isPositionTop || isPositionLeft || isPositionBottom,
             'items-end text-right': isPositionRight,
           }"
         >
@@ -63,24 +71,31 @@ const props = defineProps<{
   player: TMatchPlayer
   position: PLAYER_INFO_POSITION
   isHighlighted: boolean
+  isRt: boolean
+  showCards?: boolean
 }>()
 
 const isPositionLeft = computed(() => props.position === PLAYER_INFO_POSITION.left)
 const isPositionTop = computed(() => props.position === PLAYER_INFO_POSITION.top)
 const isPositionRight = computed(() => props.position === PLAYER_INFO_POSITION.right)
+const isPositionBottom = computed(() => props.position === PLAYER_INFO_POSITION.bottom)
 </script>
 
 <style scoped lang="scss">
 .player-info-left {
-  @apply left-0 h-full;
+  @apply absolute left-0 h-full;
 }
 
 .player-info-top {
-  @apply top-0;
+  @apply absolute top-0;
 }
 
 .player-info-right {
-  @apply right-0 h-full;
+  @apply absolute right-0 h-full;
+}
+
+.player-info-bottom {
+  @apply relative;
 }
 
 .stacked-card {

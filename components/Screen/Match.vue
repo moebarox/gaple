@@ -9,19 +9,21 @@
     <AssetsPlayerInfo
       v-for="(player, idx) in otherPlayers"
       :key="player.id"
+      show-cards
       :player="player"
       :position="idx"
       :is-highlighted="!isMatchOver && match?.state?.turn === player.id"
+      :is-rt="match?.state?.rt === player.id"
     />
 
-    <div class="absolute p-4 text-center bottom-0 w-full">
+    <div class="absolute text-center bottom-0 w-full md:p-4">
       <div v-if="isMatchOver" class="mb-4">
         <button v-if="isRoomMaster" class="rounded bg-green-500 text-white px-4 py-2" @click="nextRound">
           Start Next Round!
         </button>
         <div v-else class="text-red-400">Game over! Waiting for room master to start a new match...</div>
       </div>
-      <div class="flex justify-center gap-4">
+      <div class="relative flex justify-center gap-4 z-10 md:absolute md:bottom-4 md:left-0 md:right-0">
         <AssetsDomino
           v-for="card in currentPlayer.cards"
           :key="card"
@@ -34,21 +36,12 @@
           @select="handleSelectCard"
         />
       </div>
-      <div class="absolute flex gap-4 right-4 bottom-10">
-        <div class="flex flex-col items-end gap-2">
-          <div class="text-lg font-bold">{{ currentPlayer.name }}</div>
-          <UBadge color="black" :ui="{ rounded: 'rounded-full' }">
-            {{ currentPlayer.penalty }}
-          </UBadge>
-        </div>
-        <div class="relative w-20 h-20">
-          <UAvatar
-            size="3xl"
-            :src="`https://avatar.iran.liara.run/public/boy?username=${currentPlayer.id}`"
-            :alt="currentPlayer.name"
-          />
-        </div>
-      </div>
+      <AssetsPlayerInfo
+        :player="currentPlayer"
+        :position="PLAYER_INFO_POSITION.bottom"
+        :is-highlighted="!isMatchOver && match?.state?.turn === currentPlayer.id"
+        :is-rt="match?.state?.rt === currentPlayer.id"
+      />
     </div>
   </div>
 </template>
@@ -65,10 +58,12 @@ import {
   POLDAN_POINT,
   DEFAULT_TOAST_TIMEOUT,
 } from '#imports'
+import { AssetsMatchOverModal } from '#components'
 
 const route = useRoute()
 const { $db } = useNuxtApp()
 const user = getUser()
+const modal = useModal()
 const toast = useToast()
 
 const matchId = route.params.id as string
@@ -117,11 +112,16 @@ const isSelectable = (card: string) => isPlayerTurn.value && selectableCards.val
 const handleTurn = async doc => {
   match.value = doc.data()
 
+  if (isMatchOver.value) {
+    // modal.open(AssetsMatchOverModal)
+    return
+  }
+
   if (match.value?.state.turn !== user.id) {
     return
   }
 
-  if (selectableCards.value.length === 0 && !isMatchOver.value) {
+  if (selectableCards.value.length === 0) {
     await new Promise(resolve => setTimeout(resolve, 1000))
 
     toast.add({
