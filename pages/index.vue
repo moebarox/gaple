@@ -53,6 +53,7 @@ import { DEFAULT_MATCH, MATCH_EXPIRE_TIME, MIN_PASSWORD_LENGTH } from '#imports'
 
 const router = useRouter()
 const { $db } = useNuxtApp()
+const { user, setName } = useUser()
 
 const isCreateModalOpen = ref(false)
 const isJoinModalOpen = ref(false)
@@ -66,8 +67,7 @@ const createMatch = async () => {
     return
   }
 
-  setUser(name.value)
-  const user = getUser()
+  setName(name.value)
 
   // set expires in 7 days
   const expireAt = new Date(Date.now() + MATCH_EXPIRE_TIME)
@@ -75,8 +75,8 @@ const createMatch = async () => {
     ...DEFAULT_MATCH,
     players: [
       {
-        id: user.id,
-        name: user.name,
+        id: user.value.id,
+        name: user.value.name,
         cards: [],
         penalty: 0,
       },
@@ -84,7 +84,7 @@ const createMatch = async () => {
     settings: {
       ...DEFAULT_MATCH.settings,
       password: password.value.trim(),
-      roomMaster: user.id,
+      roomMaster: user.value.id,
     },
     expireAt: Timestamp.fromDate(expireAt),
   })
@@ -97,8 +97,7 @@ const createMatch = async () => {
 }
 
 const openCreateMatchModal = () => {
-  const user = getUser()
-  name.value = user.name
+  name.value = user.value.name
   isMatchPrivate.value = false
   password.value = ''
   isCreateModalOpen.value = true

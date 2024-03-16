@@ -117,6 +117,10 @@ export const useBoard = () => {
     board,
     totalRows,
     cardPerRow,
+    getRow,
+    getColumn,
+    getDirection,
+    getRelativeIdx,
     getCardPosition,
   }
 }

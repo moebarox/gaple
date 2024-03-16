@@ -12,7 +12,7 @@
         <div>Enter your name</div>
         <UInput v-model="name" size="lg" />
       </div>
-      <div v-if="match?.settings?.password" class="flex flex-col gap-2">
+      <div v-if="settings.password" class="flex flex-col gap-2">
         <div>Enter password</div>
         <UInput v-model="password" size="lg" />
       </div>
@@ -29,40 +29,37 @@
     </form>
   </UModal>
 
-  <UModals />
   <UNotifications :ui="{ position: 'bottom-40 left-1/2 -translate-x-1/2' }" />
 </template>
 
 <script setup lang="ts">
 import { doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore'
 
-import { MAX_PLAYERS, MIN_PASSWORD_LENGTH, DEFAULT_TOAST_TIMEOUT } from '#imports'
+import { MIN_PASSWORD_LENGTH, DEFAULT_TOAST_TIMEOUT } from '#imports'
 
 const router = useRouter()
 const route = useRoute()
 const toast = useToast()
 const { $db } = useNuxtApp()
+const { user, setName } = useUser()
+const { match, settings, state, isPlayerInMatch, isMatchFull } = useMatch()
 
 const matchId = route.params.id as string
 
-const match = ref<TMatch>({} as TMatch)
 const isEnteredMatch = ref(false)
 const isProfileModalOpen = ref(false)
 const name = ref('')
 const password = ref('')
 
-const players = computed(() => match.value?.players ?? [])
-const isStarted = computed(() => match.value?.state?.round > 0)
-const isPlayerNotInMatch = computed(() => !players.value.some(p => p.id === getUser().id))
-const isRequirePassword = computed(() => match.value?.settings?.password !== '')
+const isStarted = computed(() => state.value.round > 0)
+const isRequirePassword = computed(() => settings.value.password !== '')
 
 const handleStartMatch = (palyload: TMatch) => {
   match.value = palyload
 }
 
 const openProfileModal = () => {
-  const user = getUser()
-  name.value = user.name
+  name.value = user.value.name || getRandomName()
   password.value = ''
   isProfileModalOpen.value = true
 }
@@ -72,17 +69,16 @@ const redirectToHome = () => {
 }
 
 const enterMatch = () => {
-  if (isPlayerNotInMatch.value && isRequirePassword.value && password.value !== match.value?.settings?.password) {
+  if (!isPlayerInMatch.value && isRequirePassword.value && password.value !== settings.value.password) {
     toast.add({ title: 'Wrong password!', timeout: DEFAULT_TOAST_TIMEOUT })
     return
   }
 
   isProfileModalOpen.value = false
 
-  setUser(name.value)
-  const user = getUser()
+  setName(name.value)
 
-  if (players.value.length >= MAX_PLAYERS && isPlayerNotInMatch.value) {
+  if (isMatchFull.value && !isPlayerInMatch.value) {
     toast.add({
       title: 'Match is full! Redirecting to homepage...',
       timeout: 5000,
@@ -91,11 +87,11 @@ const enterMatch = () => {
     return
   }
 
-  if (isPlayerNotInMatch.value) {
+  if (!isPlayerInMatch.value) {
     updateDoc(doc($db, 'matches', matchId), {
       players: arrayUnion({
-        id: user.id,
-        name: user.name,
+        id: user.value.id,
+        name: user.value.name,
         cards: [],
         penalty: 0,
       }),
@@ -113,7 +109,7 @@ onMounted(async () => {
   }
 
   match.value = docSnap.data() as TMatch
-  if (isPlayerNotInMatch.value) {
+  if (!isPlayerInMatch.value) {
     openProfileModal()
     return
   }

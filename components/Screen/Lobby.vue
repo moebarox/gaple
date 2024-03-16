@@ -2,28 +2,39 @@
   <div class="w-screen h-screen flex flex-col items-center justify-center gap-8">
     <!-- TODO: add share match & QR code -->
     <div v-if="isRoomMaster" class="flex flex-col items-center gap-4">
-      <div>Need {{ MAX_PLAYERS - players.length }} more players to start the match</div>
+      <div v-if="isMatchFull">Match is full! Start the next match</div>
+      <div v-else>Need {{ MAX_PLAYERS - players.length }} more players to start the match</div>
+
       <UButton size="lg" color="primary" variant="solid" :disabled="players.length < MAX_PLAYERS" @click="startMatch">
         Start Match
       </UButton>
     </div>
     <div v-else class="flex flex-col items-center gap-4">
       <div class="text-gray-500 animate-pulse">Waiting room master to start the match...</div>
-      <!-- TODO: handle leave match -->
-      <UButton size="lg" color="red" variant="solid">Leave Match</UButton>
+      <UButton v-if="isPlayerInMatch" size="lg" color="red" variant="solid" @click="leaveMatch">Leave Match</UButton>
     </div>
 
     <div class="flex justify-center gap-4">
-      <!-- TODO: add kick player -->
-      <UBadge v-for="player in players" :key="player.id" color="black" :ui="{ rounded: 'rounded-full' }">
+      <UBadge
+        v-for="player in players"
+        :key="player.id"
+        color="black"
+        :ui="{ rounded: 'rounded-full' }"
+        :class="{
+          'cursor-pointer': isRoomMaster && player.id !== settings.roomMaster,
+        }"
+        @click="kickPlayer(player.id)"
+      >
+        <UIcon v-if="settings.roomMaster === player.id" dynamic name="i-icon-park-twotone:crown-three" class="mr-1" />
         {{ player.name }}
+        <UIcon v-if="isRoomMaster && player.id !== settings.roomMaster" dynamic name="i-ci:close-md" class="ml-1" />
       </UBadge>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { doc, onSnapshot, updateDoc } from 'firebase/firestore'
+import { doc, onSnapshot, updateDoc, arrayRemove } from 'firebase/firestore'
 
 import { FIRST_TURN_CARD, MAX_PLAYERS } from '#imports'
 
@@ -33,13 +44,14 @@ const emits = defineEmits<{
 
 const { $db } = useNuxtApp()
 const route = useRoute()
-const user = getUser()
+const router = useRouter()
+const toast = useToast()
+const { match, settings, state, players, currentPlayer, isRoomMaster, isPlayerInMatch, isMatchFull, getPlayer } =
+  useMatch()
 
-const match = ref<TMatch>({} as TMatch)
+const matchId = route.params.id as string
+
 const unsubWaitForPlayers = ref()
-
-const players = computed(() => match.value?.players ?? [])
-const isRoomMaster = computed(() => match.value?.settings?.roomMaster === user.id)
 
 const startMatch = async () => {
   if (!isRoomMaster.value) {
@@ -54,7 +66,7 @@ const startMatch = async () => {
 
   const firstTurnPlayer = findCardOwner(playersWithCards, FIRST_TURN_CARD)
 
-  updateDoc(doc($db, 'matches', route.params.id as string), {
+  updateDoc(doc($db, 'matches', matchId), {
     players: playersWithCards,
     'state.round': 1,
     'state.turn': firstTurnPlayer?.id,
@@ -62,11 +74,58 @@ const startMatch = async () => {
   })
 }
 
+const redirectToHome = () => {
+  router.replace({ name: 'index' })
+}
+
+const leaveMatch = async () => {
+  await updateDoc(doc($db, 'matches', matchId), {
+    players: arrayRemove(currentPlayer.value),
+  })
+
+  unsubFirestore()
+
+  toast.add({
+    title: 'Left match! Redirecting to homepage...',
+    timeout: 5000,
+    callback: redirectToHome,
+  })
+}
+
+const kickPlayer = async (id: string) => {
+  if (!isRoomMaster.value) {
+    return
+  }
+
+  const player = getPlayer(id)
+  await updateDoc(doc($db, 'matches', matchId), {
+    players: arrayRemove(player),
+  })
+  toast.add({ title: `${player.name} was kicked`, timeout: DEFAULT_TOAST_TIMEOUT })
+}
+
 const handleWaitForPlayers = doc => {
   match.value = doc.data()
 
-  if (match.value?.state.round !== 0) {
+  if (!isPlayerInMatch.value) {
+    unsubFirestore()
+
+    toast.add({
+      title: 'You are kicked! Redirecting to homepage...',
+      timeout: 5000,
+      callback: redirectToHome,
+    })
+    return
+  }
+
+  if (state.value.round !== 0) {
     emits('start', match.value)
+  }
+}
+
+const unsubFirestore = () => {
+  if (unsubWaitForPlayers.value) {
+    unsubWaitForPlayers.value()
   }
 }
 
@@ -75,8 +134,6 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  if (unsubWaitForPlayers.value) {
-    unsubWaitForPlayers.value()
-  }
+  unsubFirestore()
 })
 </script>

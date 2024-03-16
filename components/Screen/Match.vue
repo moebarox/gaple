@@ -1,7 +1,7 @@
 <template>
   <div class="relative flex justify-center items-center w-screen h-screen overflow-hidden">
     <AssetsBoard
-      :is-selectable="!isMatchOver && isPlayerTurn && state === TURN_STATE.selectPosition"
+      :is-selectable="!isMatchOver && isPlayerTurn && turnState === TURN_STATE.selectPosition"
       @select="handleSelectPosition"
     />
 
@@ -57,41 +57,42 @@ import {
   POLDAN_POINT,
   DEFAULT_TOAST_TIMEOUT,
 } from '#imports'
-import { AssetsMatchOverModal } from '#components'
 
 const route = useRoute()
 const { $db } = useNuxtApp()
-const user = getUser()
-const modal = useModal()
+const { user } = useUser()
 const toast = useToast()
-const { match } = useMatch()
+const {
+  match,
+  players,
+  state,
+  board,
+  head,
+  tail,
+  playerIdx,
+  currentPlayer,
+  nextPlayer,
+  isRoomMaster,
+  isPlayerTurn,
+  isMatchOver,
+  isMatchDraw,
+} = useMatch()
 
 const matchId = route.params.id as string
 
-const state = ref<TURN_STATE>(TURN_STATE.pickCard)
+const turnState = ref<TURN_STATE>(TURN_STATE.pickCard)
 const selectedCard = ref('')
 const unsubGameplay = ref()
 
-const board = computed<string[]>(() => match.value?.state?.board ?? [])
-const players = computed<TMatchPlayer[]>(() => match.value?.players ?? [])
-const currentPlayer = computed<TMatchPlayer>(
-  () => match.value?.players?.find(p => p.id === user.id) ?? ({} as TMatchPlayer)
-)
-const playerIdx = computed(() => match.value?.players?.findIndex(p => p.id === user.id))
-const isRoomMaster = computed(() => match.value?.settings?.roomMaster === user.id)
-const isPlayerTurn = computed(() => match.value?.state?.turn === user.id)
-const isAnyPlayerWin = computed(() => players.value.some(p => p.cards?.length === 0))
-const isMatchDraw = computed(() =>
-  players.value.every(p => getPossibleCards(p.cards, head.value, tail.value).length === 0)
-)
-const isMatchOver = computed(() => isAnyPlayerWin.value || isMatchDraw.value)
-const head = computed<string>(() => board.value[0]?.charAt(0) ?? '')
-const tail = computed<string>(() => board.value[board.value.length - 1]?.charAt(2) ?? '')
+const otherPlayers = computed<TMatchPlayer[]>(() => {
+  const idx = playerIdx.value
+  return players.value.slice(idx + 1, players.value.length).concat(players.value.slice(0, idx))
+})
 
 const selectableCards = computed<string[]>(() => {
   if (board.value.length === 0) {
-    if (match.value?.state?.firstTurnCard) {
-      return [match.value?.state?.firstTurnCard]
+    if (state.value.firstTurnCard) {
+      return [state.value.firstTurnCard]
     } else {
       return currentPlayer.value.cards?.filter(c => !FORBIDDEN_FIRST_TURN_CARDS.includes(c)) ?? []
     }
@@ -100,23 +101,12 @@ const selectableCards = computed<string[]>(() => {
   return getPossibleCards(currentPlayer.value.cards, head.value, tail.value)
 })
 
-const otherPlayers = computed<TMatchPlayer[]>(() => {
-  const idx = playerIdx.value
-  const players = match.value?.players ?? []
-  return players.slice(idx + 1, players.length).concat(players.slice(0, idx))
-})
-
 const isSelectable = (card: string) => isPlayerTurn.value && selectableCards.value.includes(card)
 
 const handleTurn = async doc => {
   match.value = doc.data()
 
-  if (isMatchOver.value) {
-    // modal.open(AssetsMatchOverModal)
-    return
-  }
-
-  if (match.value?.state.turn !== user.id) {
+  if (!isPlayerTurn.value) {
     return
   }
 
@@ -144,15 +134,14 @@ const handleTurn = async doc => {
 }
 
 const skipTurn = () => {
-  const nextPlayer = match.value?.players?.[playerIdx.value + 1] ?? match.value?.players?.[0]
-  const lastTurnPlayer = players.value.find(p => p.id === match.value?.state.lastTurn)
+  const lastTurnPlayer = players.value.find(p => p.id === state.value.lastTurn)
   const playersWithPenalty = players.value.map(p => {
     if (p.id === lastTurnPlayer?.id) {
       return {
         ...p,
         penalty: Math.max(p.penalty - SKIP_POINT, 0),
       }
-    } else if (p.id === user.id) {
+    } else if (p.id === user.value.id) {
       return {
         ...p,
         penalty: p.penalty + SKIP_POINT,
@@ -164,7 +153,7 @@ const skipTurn = () => {
 
   updateDoc(doc($db, 'matches', matchId), {
     players: playersWithPenalty,
-    'state.turn': nextPlayer?.id,
+    'state.turn': nextPlayer.value.id,
   })
 }
 
@@ -175,7 +164,7 @@ const handleSelectCard = (card: string) => {
 
   if (card === selectedCard.value) {
     selectedCard.value = ''
-    state.value = TURN_STATE.pickCard
+    turnState.value = TURN_STATE.pickCard
     return
   }
 
@@ -184,7 +173,7 @@ const handleSelectCard = (card: string) => {
 
   if (board.value.length !== 0 && canPlaceOnHead && canPlaceOnTail && head.value !== tail.value) {
     selectedCard.value = card
-    state.value = TURN_STATE.selectPosition
+    turnState.value = TURN_STATE.selectPosition
     toast.add({
       title: 'Please select where to place card on the board!',
       timeout: DEFAULT_TOAST_TIMEOUT,
@@ -219,10 +208,8 @@ const putCard = async (card: string, position: BOARD_POSITION) => {
     board.value.push(card)
   }
 
-  const nextPlayer = match.value?.players?.[playerIdx.value + 1] ?? match.value?.players?.[0]
-
-  const updatedPlayers = match.value?.players?.map(p => {
-    if (p.id === user.id) {
+  const updatedPlayers = players.value.map(p => {
+    if (p.id === user.value.id) {
       return currentPlayer.value
     } else {
       return p
@@ -232,8 +219,8 @@ const putCard = async (card: string, position: BOARD_POSITION) => {
   const payload = {
     players: updatedPlayers,
     'state.board': board.value,
-    'state.turn': nextPlayer?.id,
-    'state.lastTurn': user.id,
+    'state.turn': nextPlayer.value.id,
+    'state.lastTurn': user.value.id,
   }
 
   if (currentPlayer.value.cards?.length === 0) {
@@ -243,12 +230,12 @@ const putCard = async (card: string, position: BOARD_POSITION) => {
     })
 
     payload.players = playersWithPenalty
-    payload['state.turn'] = user.id
+    payload['state.turn'] = user.value.id
   } else if (isMatchDraw.value) {
     const playersWithPenalty = calculatePenalty(match.value, GAPLE_POINT)
 
     payload.players = playersWithPenalty
-    payload['state.turn'] = user.id
+    payload['state.turn'] = user.value.id
   }
 
   await updateDoc(doc($db, 'matches', matchId), payload)
@@ -257,7 +244,7 @@ const putCard = async (card: string, position: BOARD_POSITION) => {
 }
 
 const endTurn = () => {
-  state.value = TURN_STATE.pickCard
+  turnState.value = TURN_STATE.pickCard
   selectedCard.value = ''
 }
 
@@ -276,7 +263,7 @@ const nextRound = () => {
     players: playersWithCards,
     'state.board': [],
     'state.round': increment(1),
-    'state.turn': match.value?.state?.lastTurn,
+    'state.turn': state.value.lastTurn,
     'state.lastTurn': '',
     'state.firstTurnCard': '',
   }
@@ -303,13 +290,17 @@ const nextRound = () => {
   updateDoc(doc($db, 'matches', matchId), payload)
 }
 
+const unsubFirestore = () => {
+  if (unsubGameplay.value) {
+    unsubGameplay.value()
+  }
+}
+
 onMounted(() => {
   unsubGameplay.value = onSnapshot(doc($db, 'matches', matchId), handleTurn)
 })
 
 onUnmounted(() => {
-  if (unsubGameplay.value) {
-    unsubGameplay.value()
-  }
+  unsubFirestore()
 })
 </script>

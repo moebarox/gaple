@@ -1,6 +1,8 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  devtools: { enabled: true },
+  devtools: {
+    enabled: true,
+  },
   app: {
     baseURL: '/gaple-battle/',
     head: {
@@ -14,6 +16,9 @@ export default defineNuxtConfig({
       tailwindcss: {},
       autoprefixer: {},
     },
+  },
+  routeRules: {
+    '*': { ssr: false },
   },
   imports: {
     dirs: ['constants/**/*.ts', 'types/**/*.ts'],
