@@ -21,10 +21,10 @@ export const useMatch = () => {
   const isMatchFull = computed(() => players.value.length === MAX_PLAYERS)
   const isPlayerTurn = computed(() => state.value.turn === user.value.id)
   const isAnyPlayerWin = computed(() => players.value.some(p => p.cards?.length === 0))
-  const isMatchOver = computed(() => isAnyPlayerWin.value || isMatchDraw.value)
   const isMatchDraw = computed(() =>
     players.value.every(p => getPossibleCards(p.cards, head.value, tail.value).length === 0)
   )
+  const isMatchOver = computed(() => isAnyPlayerWin.value || isMatchDraw.value)
 
   const getPlayer = id => players.value.find(p => p.id === id) ?? ({} as TMatchPlayer)
 

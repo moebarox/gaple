@@ -74,7 +74,7 @@ export const useBoard = () => {
   const getColumn = (relativeIdx: number, row: number) => {
     const columnOrder = ((relativeIdx % cardPerRow.value) + cardPerRow.value) % cardPerRow.value
 
-    if (row % 2 === firstCardRow.value % 2) {
+    if (Math.abs(row % 2) === firstCardRow.value % 2) {
       return columnOrder
     }
 
@@ -88,7 +88,7 @@ export const useBoard = () => {
    * @return {CARD_DIRECTION} the direction of the card
    */
   const getDirection = row => {
-    if (row % 2 === firstCardRow.value % 2) {
+    if (Math.abs(row % 2) === firstCardRow.value % 2) {
       return CARD_DIRECTION.right
     }
 

@@ -3,28 +3,47 @@
     class="absolute top-16 left-16 right-16 bottom-16 md:top-28 md:left-36 md:right-36 md:bottom-28 bg-[#354566] rounded-full border-8 border-[#3d5172] drop-shadow-2xl shadow-inner before:absolute before:top-4 before:left-4 before:right-4 before:bottom-4 before:rounded-full before:border-2 before:border-[#3d5172] before:z-[-1]"
   >
     <div ref="innerBoard" class="absolute w-5/6 h-5/6 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-      <template v-for="card in board">
-        <div
-          v-if="Object.values(BOARD_POSITION).includes(BOARD_POSITION[card])"
-          class="absolute rounded-md bg-[#2e3d58] border-[1px] border-dashed border-[#3d5172] cursor-pointer w-[35px] h-[70px] z-10 before:absolute before:top-0 before:left-0 before:right-0 before:bottom-0 before:rounded-md before:animate-ping before:bg-[#2e3d58] before:pointer-events-none"
-          :style="generateCardStyle(card)"
-          @click="handleSelect(card)"
-        ></div>
-        <AssetsDomino v-else :key="card" :card="card" size="small" class="absolute" :style="generateCardStyle(card)" />
-      </template>
+      <div
+        v-if="showHeadPlaceholder || board.length === 0"
+        class="absolute rounded-md bg-[#2e3d58] border-[1px] border-dashed border-[#3d5172] w-[35px] h-[70px] z-10 before:absolute before:top-0 before:left-0 before:right-0 before:bottom-0 before:rounded-md before:bg-[#2e3d58] before:pointer-events-none"
+        :class="{
+          'cursor-pointer before:animate-ping': canSelectPosition,
+        }"
+        :style="generatePositionStyle(BOARD_POSITION.head)"
+        @click="handleSelect(BOARD_POSITION.head)"
+      ></div>
+      <AssetsDomino
+        v-for="card in board"
+        :key="card"
+        :card="card"
+        size="small"
+        class="absolute"
+        :style="generateCardStyle(card)"
+      />
+      <div
+        v-if="showTailPlaceholder && board.length > 0"
+        class="absolute rounded-md bg-[#2e3d58] border-[1px] border-dashed border-[#3d5172] w-[35px] h-[70px] z-10 before:absolute before:top-0 before:left-0 before:right-0 before:bottom-0 before:rounded-md before:bg-[#2e3d58] before:pointer-events-none"
+        :class="{
+          'cursor-pointer before:animate-ping': canSelectPosition,
+        }"
+        :style="generatePositionStyle(BOARD_POSITION.tail)"
+        @click="handleSelect(BOARD_POSITION.tail)"
+      ></div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { BOARD_POSITION } from '#imports'
+import { BOARD_POSITION, CARD_DIRECTION } from '#imports'
 
-const { board, totalRows, cardPerRow, getCardPosition } = useBoard()
+const { board, totalRows, cardPerRow, getRow, getColumn, getDirection, getRelativeIdx, getCardPosition } = useBoard()
 
 const BOARD_CARD_LENGTH = 70
 
 const props = defineProps<{
-  isSelectable?: boolean
+  showHeadPlaceholder?: boolean
+  showTailPlaceholder?: boolean
+  canSelectPosition?: boolean
 }>()
 
 const emits = defineEmits<{
@@ -38,11 +57,25 @@ const innerBoardHeight = ref(0)
 const topPadding = computed(() => (innerBoardHeight.value - BOARD_CARD_LENGTH * totalRows.value) / 2)
 const leftPadding = computed(() => (innerBoardWidth.value - BOARD_CARD_LENGTH * cardPerRow.value) / 2)
 
-const generateCardStyle = (card: string) => {
-  const style: Record<string, string> = {}
-  const isReversed = isCardReversed(card)
+const generatePositionStyle = (position: BOARD_POSITION) => {
+  const relativeIdx = position === BOARD_POSITION.head ? getRelativeIdx(0) - 1 : getRelativeIdx(board.value.length)
 
+  const row = getRow(relativeIdx)
+  const col = getColumn(relativeIdx, row)
+  const direction = getDirection(row)
+
+  return generateStyle(row, col, direction)
+}
+
+const generateCardStyle = (card: string) => {
+  const isReversed = isCardReversed(card)
   const { row, col, direction } = getCardPosition(card)
+
+  return generateStyle(row, col, direction, isReversed)
+}
+
+const generateStyle = (row: number, col: number, direction: CARD_DIRECTION, isReversed?: boolean) => {
+  const style: Record<string, string> = {}
 
   let top = topPadding.value + row * BOARD_CARD_LENGTH
   let left = leftPadding.value + col * BOARD_CARD_LENGTH
@@ -89,9 +122,9 @@ const generateCardStyle = (card: string) => {
 const isCardReversed = card => card.at(0) > card.at(2)
 
 const handleSelect = position => {
-  if (!props.isSelectable) return
+  if (!props.canSelectPosition) return
 
-  emits('select', BOARD_POSITION[position as keyof typeof BOARD_POSITION])
+  emits('select', position)
 }
 
 const calculateBoardSize = () => {

@@ -1,7 +1,9 @@
 <template>
   <div class="relative flex justify-center items-center w-screen h-screen overflow-hidden">
     <AssetsBoard
-      :is-selectable="!isMatchOver && isPlayerTurn && turnState === TURN_STATE.selectPosition"
+      :show-head-placeholder="!isMatchOver && isPlayerTurn && possiblyPlacedOnHead"
+      :show-tail-placeholder="!isMatchOver && isPlayerTurn && possiblyPlacedOnTail"
+      :can-select-position="!isMatchOver && isPlayerTurn && turnState === TURN_STATE.selectPosition"
       @select="handleSelectPosition"
     />
 
@@ -20,8 +22,8 @@
         <button v-if="isRoomMaster" class="rounded bg-green-500 text-white px-4 py-2" @click="nextRound">
           Start Next Round!
         </button>
-        <div v-else class="text-red-400">Game over! Waiting for room master to start a new match...</div>
       </div>
+
       <div class="relative flex justify-center gap-4 z-10 md:absolute md:bottom-4 md:left-0 md:right-0">
         <AssetsDomino
           v-for="card in currentPlayer.cards"
@@ -101,10 +103,21 @@ const selectableCards = computed<string[]>(() => {
   return getPossibleCards(currentPlayer.value.cards, head.value, tail.value)
 })
 
+const possiblyPlacedOnHead = computed(() => selectableCards.value.some(c => c.includes(head.value)))
+const possiblyPlacedOnTail = computed(() => selectableCards.value.some(c => c.includes(tail.value)))
+
 const isSelectable = (card: string) => isPlayerTurn.value && selectableCards.value.includes(card)
 
 const handleTurn = async doc => {
   match.value = doc.data()
+
+  if (isMatchOver.value) {
+    toast.add({
+      title: 'Game over! Waiting for room master to start a new match...',
+      timeout: DEFAULT_TOAST_TIMEOUT,
+    })
+    return
+  }
 
   if (!isPlayerTurn.value) {
     return
