@@ -1,7 +1,6 @@
 <template>
   <div class="relative flex justify-center items-center w-screen h-screen overflow-hidden">
     <AssetsBoard
-      :cards="board"
       :is-selectable="!isMatchOver && isPlayerTurn && state === TURN_STATE.selectPosition"
       @select="handleSelectPosition"
     />
@@ -65,10 +64,10 @@ const { $db } = useNuxtApp()
 const user = getUser()
 const modal = useModal()
 const toast = useToast()
+const { match } = useMatch()
 
 const matchId = route.params.id as string
 
-const match = ref<TMatch>({} as TMatch)
 const state = ref<TURN_STATE>(TURN_STATE.pickCard)
 const selectedCard = ref('')
 const unsubGameplay = ref()
