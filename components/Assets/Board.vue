@@ -45,15 +45,16 @@ const generateCardStyle = (card: string) => {
   const { row, col, direction } = getCardPosition(card)
 
   let top = topPadding.value + row * BOARD_CARD_LENGTH
-  let left = leftPadding.value + col * BOARD_CARD_LENGTH - BOARD_CARD_LENGTH / 2
+  let left = leftPadding.value + col * BOARD_CARD_LENGTH
 
   if (direction === CARD_DIRECTION.left) {
     if (col === 0) {
       top += BOARD_CARD_LENGTH / 4
-    } else {
-      left -= BOARD_CARD_LENGTH / 4
+      left += BOARD_CARD_LENGTH / 4
     }
   } else {
+    left += BOARD_CARD_LENGTH / 4
+
     if (col === cardPerRow.value - 1) {
       top += BOARD_CARD_LENGTH / 4
     } else {
