@@ -26,7 +26,6 @@ jobs:
           EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
           to_envs() { jq -r "to_entries[] | \"\(.key)<<$EOF\n\(.value)\n$EOF\n\""; }
           echo "$SECRETS_CONTEXT" | to_envs >> $GITHUB_ENV
-      - run: echo $GITHUB_ENV
       - run: pnpm install
       - run: npx nuxt build --preset github_pages
       - name: Upload artifact
