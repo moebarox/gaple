@@ -19,11 +19,12 @@
         v-for="player in players"
         :key="player.id"
         color="black"
+        size="md"
         :ui="{ rounded: 'rounded-full' }"
         :class="{
           'cursor-pointer': isRoomMaster && player.id !== settings.roomMaster,
         }"
-        @click="kickPlayer(player.id)"
+        @click="confirmKick(player)"
       >
         <div class="flex items-center gap-1">
           <UIcon v-if="settings.roomMaster === player.id" dynamic name="i-mdi:crown" />
@@ -38,13 +39,13 @@
 <script setup lang="ts">
 import { doc, onSnapshot, updateDoc, arrayRemove } from 'firebase/firestore'
 
-import { FIRST_TURN_CARD, MAX_PLAYERS } from '#imports'
+import { FIRST_TURN_CARD, MAX_PLAYERS, type TMatchPlayer } from '#imports'
 
 const emits = defineEmits<{
   (e: 'start', match: TMatch): void
 }>()
 
-const { $db } = useNuxtApp()
+const { $db, $confirmation } = useNuxtApp()
 const route = useRoute()
 const router = useRouter()
 const toast = useToast()
@@ -94,12 +95,22 @@ const leaveMatch = async () => {
   })
 }
 
-const kickPlayer = async (id: string) => {
-  if (!isRoomMaster.value) {
+const confirmKick = (player: TMatchPlayer) => {
+  if (!isRoomMaster.value || player.id === settings.value.roomMaster) {
     return
   }
 
-  const player = getPlayer(id)
+  $confirmation.open({
+    text: `Are you sure you want to kick ${player.name}?`,
+    onConfirm: () => kickPlayer(player),
+  })
+}
+
+const kickPlayer = async (player: TMatchPlayer) => {
+  if (!isRoomMaster.value || player.id === settings.value.roomMaster) {
+    return
+  }
+
   await updateDoc(doc($db, 'matches', matchId), {
     players: arrayRemove(player),
   })

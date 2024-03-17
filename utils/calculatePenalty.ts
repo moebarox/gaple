@@ -64,12 +64,12 @@ export const calculatePenalty = (match: TMatch, penalty: number, lastTurn?: TLas
 
   // Give point to user owning double zero card
   if (!zeroCardExists && doubleZeroCardOwnerId) {
-    players[doubleZeroCardOwnerId].penalty = players[doubleZeroCardOwnerId].penalty + LAST_BALAK_POINT
+    players[doubleZeroCardOwnerId].penalty += LAST_BALAK_POINT
   }
 
   // Give point to user owning double six card
   if (!sixCardExists && doubleSixCardOwnerId) {
-    players[doubleSixCardOwnerId].penalty = players[doubleSixCardOwnerId].penalty + LAST_BALAK_POINT
+    players[doubleSixCardOwnerId].penalty += LAST_BALAK_POINT
   }
 
   // Give point to every player
@@ -78,7 +78,7 @@ export const calculatePenalty = (match: TMatch, penalty: number, lastTurn?: TLas
   if (lastTurn && ULTIMATE_LAST_CARD.includes(lastTurn.lastCard)) {
     Object.values(players).forEach(p => {
       if (p.id !== lastTurn.playerId) {
-        p.penalty = p.penalty + LAST_BALAK_POINT
+        p.penalty += LAST_BALAK_POINT
       }
     })
   }
