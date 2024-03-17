@@ -25,9 +25,11 @@
         }"
         @click="kickPlayer(player.id)"
       >
-        <UIcon v-if="settings.roomMaster === player.id" dynamic name="i-icon-park-twotone:crown-three" class="mr-1" />
-        {{ player.name }}
-        <UIcon v-if="isRoomMaster && player.id !== settings.roomMaster" dynamic name="i-ci:close-md" class="ml-1" />
+        <div class="flex items-center gap-1">
+          <UIcon v-if="settings.roomMaster === player.id" dynamic name="i-icon-park-twotone:crown-three" />
+          <span>{{ player.name }}</span>
+          <UIcon v-if="isRoomMaster && player.id !== settings.roomMaster" dynamic name="i-ci:close-md" />
+        </div>
       </UBadge>
     </div>
   </div>

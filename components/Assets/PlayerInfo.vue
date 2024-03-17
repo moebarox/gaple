@@ -39,21 +39,6 @@
             :chip-text="isRt ? 'RT' : ''"
             :chip-color="isRt ? 'primary' : null"
           />
-
-          <div
-            v-if="showCards && !isRevealCard"
-            class="absolute top-2/3 hidden md:flex stacked-card"
-            :class="{
-              'right-0': isPositionRight,
-              'left-0': isPositionTop || isPositionLeft || isPositionBottom,
-            }"
-          >
-            <div
-              v-for="card in player.cards"
-              :key="card"
-              class="relative w-[25px] h-[50px] rounded-md bg-gradient-to-br from-[#fd797f] to-[#ec585f] border-2 border-[#fe9297]"
-            ></div>
-          </div>
         </div>
 
         <div
@@ -64,21 +49,30 @@
           }"
         >
           <div class="text-lg font-bold">{{ player.name }}</div>
-          <div class="relative">
+          <div class="flex items-center gap-2">
             <UBadge color="black" :ui="{ rounded: 'rounded-full' }">
-              {{ player.penalty }}
+              <div class="flex items-center gap-1">
+                <UIcon dynamic name="i-mdi:cards" />
+                <span>{{ player.cards.length }}</span>
+              </div>
             </UBadge>
-
-            <Transition name="raise">
-              <UBadge
-                v-if="penaltyPoint"
-                color="black"
-                :ui="{ rounded: 'rounded-full' }"
-                class="absolute top-0 left-0 opacity-0"
-              >
-                {{ penaltyPoint }}
+            <div class="relative">
+              <UBadge color="black" :ui="{ rounded: 'rounded-full' }">
+                <span class="font-bold mr-1">RT</span>
+                <span>{{ player.penalty }}</span>
               </UBadge>
-            </Transition>
+
+              <Transition name="raise">
+                <UBadge
+                  v-if="penaltyPoint"
+                  color="black"
+                  :ui="{ rounded: 'rounded-full' }"
+                  class="absolute top-0 left-0 opacity-0"
+                >
+                  {{ penaltyPoint }}
+                </UBadge>
+              </Transition>
+            </div>
           </div>
         </div>
 
@@ -137,12 +131,6 @@ const updatePenalty = (diff: number) => {
 </script>
 
 <style scoped lang="scss">
-.stacked-card {
-  div:not(:first-child) {
-    @apply ml-[-12px];
-  }
-}
-
 .raise-enter-active {
   @apply transition-all duration-1000;
 }
