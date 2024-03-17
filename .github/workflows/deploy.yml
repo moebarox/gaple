@@ -24,6 +24,7 @@ jobs:
         with:
           node-version: "20"
       # Pick your own package manager and build script
+      - run: echo "$FIREBASE_API_KEY"
       - run: pnpm install
       - run: npx nuxt build --preset github_pages
       - name: Upload artifact

@@ -54,6 +54,8 @@ import { DEFAULT_MATCH, MATCH_EXPIRE_TIME, MIN_PASSWORD_LENGTH } from '#imports'
 const router = useRouter()
 const { $db } = useNuxtApp()
 const { user, setName } = useUser()
+const { firebase } = useAppConfig()
+console.log(firebase)
 
 const isCreateModalOpen = ref(false)
 const isJoinModalOpen = ref(false)
