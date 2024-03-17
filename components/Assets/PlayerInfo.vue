@@ -1,5 +1,13 @@
 <template>
-  <div class="p-2 text-center md:p-4" :class="`player-info-${PLAYER_INFO_POSITION[position]}`">
+  <div
+    class="p-2 text-center md:p-4"
+    :class="{
+      'absolute left-0 h-full': isPositionLeft,
+      'absolute top-0': isPositionTop,
+      'absolute right-0 h-full': isPositionRight,
+      relative: isPositionBottom,
+    }"
+  >
     <div
       class="flex items-center justify-center h-full"
       :class="{
@@ -8,9 +16,9 @@
       }"
     >
       <div
-        class="flex gap-2 md:flex-row md:gap-4"
+        class="relative flex gap-2 md:flex-row md:gap-4"
         :class="{
-          'md:flex-row-reverse': isPositionRight,
+          'items-end md:items-start md:flex-row-reverse': isPositionRight,
           'flex-col': isPositionLeft || isPositionRight,
           'items-center': isPositionTop || isPositionBottom,
         }"
@@ -31,8 +39,9 @@
             :chip-text="isRt ? 'RT' : ''"
             :chip-color="isRt ? 'primary' : null"
           />
+
           <div
-            v-if="showCards"
+            v-if="showCards && !isRevealCard"
             class="absolute top-2/3 hidden md:flex stacked-card"
             :class="{
               'right-0': isPositionRight,
@@ -59,6 +68,17 @@
             {{ player.penalty }}
           </UBadge>
         </div>
+
+        <div
+          v-if="isRevealCard"
+          class="absolute -bottom-2 translate-y-full flex gap-1"
+          :class="{
+            'right-0': isPositionRight,
+            'left-0': isPositionTop || isPositionLeft || isPositionBottom,
+          }"
+        >
+          <AssetsDomino v-for="card in player.cards" :key="card" :card="card" size="small" />
+        </div>
       </div>
     </div>
   </div>
@@ -70,8 +90,9 @@ import { PLAYER_INFO_POSITION } from '#imports'
 const props = defineProps<{
   player: TMatchPlayer
   position: PLAYER_INFO_POSITION
-  isHighlighted: boolean
-  isRt: boolean
+  isHighlighted?: boolean
+  isRt?: boolean
+  isRevealCard?: boolean
   showCards?: boolean
 }>()
 
@@ -82,22 +103,6 @@ const isPositionBottom = computed(() => props.position === PLAYER_INFO_POSITION.
 </script>
 
 <style scoped lang="scss">
-.player-info-left {
-  @apply absolute left-0 h-full;
-}
-
-.player-info-top {
-  @apply absolute top-0;
-}
-
-.player-info-right {
-  @apply absolute right-0 h-full;
-}
-
-.player-info-bottom {
-  @apply relative;
-}
-
 .stacked-card {
   div:not(:first-child) {
     @apply ml-[-12px];

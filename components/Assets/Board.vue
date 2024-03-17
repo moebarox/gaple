@@ -1,6 +1,6 @@
 <template>
   <div
-    class="absolute top-16 left-16 right-16 bottom-16 md:top-28 md:left-36 md:right-36 md:bottom-28 bg-[#354566] rounded-full border-8 border-[#3d5172] drop-shadow-2xl shadow-inner before:absolute before:top-4 before:left-4 before:right-4 before:bottom-4 before:rounded-full before:border-2 before:border-[#3d5172] before:z-[-1]"
+    class="absolute top-10 left-6 right-6 bottom-28 md:top-28 md:left-36 md:right-36 bg-[#354566] rounded-full border-8 border-[#3d5172] drop-shadow-2xl shadow-inner before:absolute before:top-4 before:left-4 before:right-4 before:bottom-4 before:rounded-full before:border-2 before:border-[#3d5172] before:z-[-1]"
   >
     <div ref="innerBoard" class="absolute w-5/6 h-5/6 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
       <div

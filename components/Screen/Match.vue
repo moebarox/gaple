@@ -13,36 +13,37 @@
       show-cards
       :player="player"
       :position="idx"
+      :is-reveal-card="isMatchOver"
       :is-highlighted="!isMatchOver && match?.state?.turn === player.id"
       :is-rt="match?.state?.rt === player.id"
     />
 
-    <div class="absolute text-center bottom-0 w-full md:p-4">
-      <div v-if="isMatchOver" class="mb-4">
-        <button v-if="isRoomMaster" class="rounded bg-green-500 text-white px-4 py-2" @click="nextRound">
-          Start Next Round!
-        </button>
-      </div>
+    <div class="absolute text-center bottom-0 w-full">
+      <UButton v-if="isMatchOver && isRoomMaster" size="lg" color="primary" variant="solid" @click="nextRound">
+        Start Next Round!
+      </UButton>
 
-      <div class="relative flex justify-center gap-4 z-10 md:absolute md:bottom-4 md:left-0 md:right-0">
-        <AssetsDomino
-          v-for="card in currentPlayer.cards"
-          :key="card"
-          :card="card"
-          :is-selectable="!isMatchOver && isSelectable(card)"
-          :is-disabled="!isMatchOver && isPlayerTurn && !selectableCards.includes(card)"
-          :class="{
-            '-translate-y-4': card === selectedCard,
-          }"
-          @select="handleSelectCard"
+      <div class="flex flex-col items-center md:flex-row-reverse">
+        <div class="flex justify-center gap-4 grow p-2 md:justify-end md:p-4">
+          <AssetsDomino
+            v-for="card in currentPlayer.cards"
+            :key="card"
+            :card="card"
+            :is-selectable="!isMatchOver && isSelectable(card)"
+            :is-disabled="!isMatchOver && isPlayerTurn && !selectableCards.includes(card)"
+            :class="{
+              '-translate-y-4': card === selectedCard,
+            }"
+            @select="handleSelectCard"
+          />
+        </div>
+        <AssetsPlayerInfo
+          :player="currentPlayer"
+          :position="PLAYER_INFO_POSITION.bottom"
+          :is-highlighted="!isMatchOver && match?.state?.turn === currentPlayer.id"
+          :is-rt="match?.state?.rt === currentPlayer.id"
         />
       </div>
-      <AssetsPlayerInfo
-        :player="currentPlayer"
-        :position="PLAYER_INFO_POSITION.bottom"
-        :is-highlighted="!isMatchOver && match?.state?.turn === currentPlayer.id"
-        :is-rt="match?.state?.rt === currentPlayer.id"
-      />
     </div>
   </div>
 </template>
