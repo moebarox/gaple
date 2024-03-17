@@ -3,13 +3,27 @@
   <div class="w-screen h-dvh flex flex-col items-center justify-center gap-8">
     <img src="/images/logo.png" alt="logo" class="w-[300px]" />
     <div class="flex flex-col justify-center gap-4 w-full p-4 md:flex-row">
-      <div class="grow">
-        <UButton block size="lg" color="primary" variant="solid" @click="openCreateMatchModal">
+      <div class="grow md:grow-0">
+        <UButton
+          size="lg"
+          color="primary"
+          variant="solid"
+          class="w-full justify-center px-8 md:w-auto"
+          @click="openCreateMatchModal"
+        >
           Create a New Game
         </UButton>
       </div>
-      <div class="grow">
-        <UButton block size="lg" color="red" variant="solid" @click="openJoinMatchModal">Join Existing Game</UButton>
+      <div class="grow md:grow-0">
+        <UButton
+          size="lg"
+          color="red"
+          variant="solid"
+          class="w-full justify-center px-8 md:w-auto"
+          @click="openJoinMatchModal"
+        >
+          Join Existing Game
+        </UButton>
       </div>
     </div>
   </div>

@@ -1,3 +1,5 @@
+import { TITLE, DESCRIPTION } from './constants/seo'
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: {
@@ -17,8 +19,18 @@ export default defineNuxtConfig({
   app: {
     baseURL: process.env.BASE_URL,
     head: {
-      title: 'Gaple Battle!',
-      meta: [{ name: 'description', content: 'You are challenged to join Gaple Battle!' }],
+      title: TITLE,
+      link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
+      meta: [
+        { name: 'description', content: DESCRIPTION },
+        { name: 'og:title', content: TITLE },
+        { name: 'og:description', content: DESCRIPTION },
+        { name: 'og:url', content: 'https://moebarox.github.io/gaple-battle/' },
+        { name: 'twitter:card', content: 'summary' },
+        { name: 'twitter:title', content: TITLE },
+        { name: 'twitter:description', content: DESCRIPTION },
+      ],
+      htmlAttrs: { lang: 'id' },
       charset: 'utf-8',
       viewport: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no',
     },
