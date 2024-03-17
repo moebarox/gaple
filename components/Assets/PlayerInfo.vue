@@ -84,7 +84,7 @@
             'left-0': isPositionTop || isPositionLeft || isPositionBottom,
           }"
         >
-          <AssetsDomino v-for="card in player.cards" :key="card" :card="card" size="small" />
+          <AssetsDomino v-for="card in player.cards" :key="card" :card="card" :width="35" />
         </div>
       </div>
     </div>

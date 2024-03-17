@@ -20,6 +20,7 @@
     "happy-dom": "^13.8.6",
     "lodash": "^4.17.21",
     "nuxt": "^3.10.1",
+    "nuxt-viewport": "^2.1.4",
     "postcss": "^8.4.35",
     "prettier": "^3.2.5",
     "sass": "^1.71.0",

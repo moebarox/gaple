@@ -29,6 +29,7 @@
             v-for="card in currentPlayer.cards"
             :key="card"
             :card="card"
+            :width="cardSize"
             :is-selectable="!isMatchOver && isSelectable(card)"
             :is-disabled="!isMatchOver && isPlayerTurn && !selectableCards.includes(card)"
             :class="{
@@ -62,7 +63,7 @@ import {
 } from '#imports'
 
 const route = useRoute()
-const { $db } = useNuxtApp()
+const { $db, $viewport } = useNuxtApp()
 const { user } = useUser()
 const toast = useToast()
 const {
@@ -106,6 +107,7 @@ const selectableCards = computed<string[]>(() => {
 
 const possiblyPlacedOnHead = computed(() => selectableCards.value.some(c => c.includes(head.value)))
 const possiblyPlacedOnTail = computed(() => selectableCards.value.some(c => c.includes(tail.value)))
+const cardSize = computed(() => ($viewport.isGreaterOrEquals('md') ? 70 : 40))
 
 const isSelectable = (card: string) => isPlayerTurn.value && selectableCards.value.includes(card)
 

@@ -16,7 +16,7 @@
         v-for="card in board"
         :key="card"
         :card="card"
-        size="small"
+        :width="35"
         class="absolute"
         :style="generateCardStyle(card)"
       />
@@ -34,11 +34,9 @@
 </template>
 
 <script setup lang="ts">
-import { BOARD_POSITION, CARD_DIRECTION } from '#imports'
+import { BOARD_CARD_LENGTH, BOARD_POSITION, CARD_DIRECTION } from '#imports'
 
 const { board, totalRows, cardPerRow, getRow, getColumn, getDirection, getRelativeIdx, getCardPosition } = useBoard()
-
-const BOARD_CARD_LENGTH = 70
 
 const props = defineProps<{
   showHeadPlaceholder?: boolean

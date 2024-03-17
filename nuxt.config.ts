@@ -9,7 +9,30 @@ export default defineNuxtConfig({
       title: 'Gaple Battle!',
     },
   },
-  modules: ['@nuxt/ui'],
+  modules: [
+    '@nuxt/ui',
+    [
+      'nuxt-viewport',
+      {
+        breakpoints: {
+          xs: 320,
+          sm: 640,
+          md: 768,
+          lg: 1024,
+          xl: 1280,
+          '2xl': 1536,
+        },
+
+        defaultBreakpoints: {
+          desktop: 'lg',
+          mobile: 'xs',
+          tablet: 'md',
+        },
+
+        fallbackBreakpoint: 'lg',
+      },
+    ],
+  ],
   css: ['~/assets/css/main.css'],
   postcss: {
     plugins: {
