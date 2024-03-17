@@ -64,9 +64,22 @@
           }"
         >
           <div class="text-lg font-bold">{{ player.name }}</div>
-          <UBadge color="black" :ui="{ rounded: 'rounded-full' }">
-            {{ player.penalty }}
-          </UBadge>
+          <div class="relative">
+            <UBadge color="black" :ui="{ rounded: 'rounded-full' }">
+              {{ player.penalty }}
+            </UBadge>
+
+            <Transition name="raise">
+              <UBadge
+                v-if="penaltyPoint"
+                color="black"
+                :ui="{ rounded: 'rounded-full' }"
+                class="absolute top-0 left-0 opacity-0"
+              >
+                {{ penaltyPoint }}
+              </UBadge>
+            </Transition>
+          </div>
         </div>
 
         <div
@@ -96,10 +109,31 @@ const props = defineProps<{
   showCards?: boolean
 }>()
 
+const penaltyPoint = ref('')
+
 const isPositionLeft = computed(() => props.position === PLAYER_INFO_POSITION.left)
 const isPositionTop = computed(() => props.position === PLAYER_INFO_POSITION.top)
 const isPositionRight = computed(() => props.position === PLAYER_INFO_POSITION.right)
 const isPositionBottom = computed(() => props.position === PLAYER_INFO_POSITION.bottom)
+
+watch(
+  () => props.player.penalty,
+  (newValue, oldValue) => {
+    if (newValue === oldValue) {
+      return
+    }
+
+    updatePenalty(newValue - oldValue)
+  }
+)
+
+const updatePenalty = (diff: number) => {
+  penaltyPoint.value = diff > 0 ? `+${diff}` : `${diff}`
+
+  setTimeout(() => {
+    penaltyPoint.value = ''
+  }, 900)
+}
 </script>
 
 <style scoped lang="scss">
@@ -107,5 +141,17 @@ const isPositionBottom = computed(() => props.position === PLAYER_INFO_POSITION.
   div:not(:first-child) {
     @apply ml-[-12px];
   }
+}
+
+.raise-enter-active {
+  @apply transition-all duration-1000;
+}
+
+.raise-enter-from {
+  @apply opacity-100;
+}
+
+.raise-enter-to {
+  @apply opacity-0 -translate-y-4;
 }
 </style>
