@@ -63,7 +63,7 @@ const password = ref('')
 const matchId = ref('')
 
 const createMatch = async () => {
-  if (password.value.trim() === '') {
+  if (isMatchPrivate.value && password.value.trim() === '') {
     return
   }
 

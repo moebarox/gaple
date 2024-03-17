@@ -24,7 +24,7 @@
       </UButton>
 
       <div class="flex flex-col items-center md:flex-row-reverse">
-        <div class="flex justify-center gap-4 grow p-2 md:justify-end md:p-4">
+        <div class="flex justify-center grow gap-3 p-2 md:justify-end md:gap-4 md:p-4">
           <AssetsDomino
             v-for="card in currentPlayer.cards"
             :key="card"

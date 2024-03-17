@@ -29,7 +29,7 @@
     </form>
   </UModal>
 
-  <UNotifications :ui="{ position: 'bottom-40 left-1/2 -translate-x-1/2' }" />
+  <UNotifications :ui="{ position: 'top-0 bottom-auto left-1/2 -translate-x-1/2' }" />
 </template>
 
 <script setup lang="ts">
@@ -48,7 +48,7 @@ const matchId = route.params.id as string
 
 const isEnteredMatch = ref(false)
 const isProfileModalOpen = ref(false)
-const name = ref('')
+const name = ref(user.value.name)
 const password = ref('')
 
 const isStarted = computed(() => state.value.round > 0)
