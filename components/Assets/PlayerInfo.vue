@@ -16,17 +16,17 @@
       }"
     >
       <div
-        class="relative flex gap-2 md:flex-row md:gap-4"
+        class="relative flex gap-2 md:flex-row md:gap-3"
         :class="{
           'items-end md:items-start md:flex-row-reverse': isPositionRight,
+          'items-center md:items-start': isPositionTop || isPositionBottom,
           'flex-col': isPositionLeft || isPositionRight,
-          'items-center': isPositionTop || isPositionBottom,
         }"
       >
         <div
           class="relative w-12 h-12 md:w-20 md:h-20"
           :class="{
-            'before:w-full before:h-full before:absolute before:top-0 before:left-0 before:rounded-full before:z-[-1] before:animate-ping before:bg-gray-600':
+            'before:w-full before:h-full before:absolute before:top-0 before:left-0 before:rounded-full before:animate-ping before:bg-gray-600':
               isHighlighted,
           }"
         >
@@ -49,7 +49,13 @@
           }"
         >
           <div class="text-lg font-bold">{{ player.name }}</div>
-          <div class="flex items-center gap-2">
+          <div
+            class="flex items-start gap-1 md:flex-row"
+            :class="{
+              'flex-col': isPositionLeft || isPositionRight,
+              'items-end': isPositionRight,
+            }"
+          >
             <UBadge color="black" :ui="{ rounded: 'rounded-full' }">
               <div class="flex items-center gap-1">
                 <UIcon dynamic name="i-mdi:cards" />
@@ -67,7 +73,7 @@
                   v-if="penaltyPoint"
                   color="black"
                   :ui="{ rounded: 'rounded-full' }"
-                  class="absolute top-0 left-0 opacity-0"
+                  class="absolute top-0 right-0 opacity-0"
                 >
                   {{ penaltyPoint }}
                 </UBadge>

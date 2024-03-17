@@ -1,5 +1,5 @@
 <template>
-  <div class="relative flex justify-center items-center w-screen h-screen overflow-hidden">
+  <div class="relative flex justify-center items-center w-screen h-dvh overflow-hidden">
     <AssetsBoard
       :show-head-placeholder="!isMatchOver && isPlayerTurn && possiblyPlacedOnHead"
       :show-tail-placeholder="!isMatchOver && isPlayerTurn && possiblyPlacedOnTail"

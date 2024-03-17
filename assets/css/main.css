@@ -3,5 +3,5 @@
 @tailwind utilities;
 
 body {
-  @apply w-screen h-screen bg-gradient-to-br from-[#293852] to-[#182239] text-white;
+  @apply w-screen h-dvh bg-gradient-to-br from-[#293852] to-[#182239] text-white;
 }

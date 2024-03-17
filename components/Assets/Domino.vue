@@ -38,7 +38,8 @@ const emits = defineEmits<{
 }>()
 
 const dominoStyle = computed(() => {
-  const sprite = DOMINO_SPRITE_MAPPING[props.card]
+  const card = props.card.split('|').sort().join('|')
+  const sprite = DOMINO_SPRITE_MAPPING[card]
   const scaledWidth = DEFAULT_CARD_WIDTH * (props.width / DEFAULT_CARD_WIDTH)
   const scaledHeight = DEFAULT_CARD_HEIGHT * ((props.width * 2) / DEFAULT_CARD_HEIGHT)
 

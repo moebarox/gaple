@@ -1,10 +1,16 @@
 <!-- TODO: add analytics -->
 <template>
-  <div class="w-screen h-screen flex flex-col items-center justify-center gap-8">
+  <div class="w-screen h-dvh flex flex-col items-center justify-center gap-8">
     <img src="/images/logo.png" alt="logo" class="w-[300px]" />
-    <div class="flex flex-wrap justify-center gap-4">
-      <UButton size="lg" color="primary" variant="solid" @click="openCreateMatchModal"> Create a New Game </UButton>
-      <UButton size="lg" color="red" variant="solid" @click="openJoinMatchModal"> Join Existing Game </UButton>
+    <div class="flex flex-col justify-center gap-4 w-full p-4 md:flex-row">
+      <div class="grow">
+        <UButton block size="lg" color="primary" variant="solid" @click="openCreateMatchModal">
+          Create a New Game
+        </UButton>
+      </div>
+      <div class="grow">
+        <UButton block size="lg" color="red" variant="solid" @click="openJoinMatchModal">Join Existing Game</UButton>
+      </div>
     </div>
   </div>
 

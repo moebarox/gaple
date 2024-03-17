@@ -18,6 +18,9 @@ export default defineNuxtConfig({
     baseURL: process.env.BASE_URL,
     head: {
       title: 'Gaple Battle!',
+      meta: [{ name: 'description', content: 'You are challenged to join Gaple Battle!' }],
+      charset: 'utf-8',
+      viewport: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no',
     },
   },
   modules: [

@@ -80,11 +80,7 @@ const enterMatch = () => {
   setName(name.value)
 
   if (isMatchFull.value && !isPlayerInMatch.value) {
-    toast.add({
-      title: 'Match is full! Redirecting to homepage...',
-      timeout: 5000,
-      callback: redirectToHome,
-    })
+    handleMatchFull()
     return
   }
 
@@ -102,6 +98,14 @@ const enterMatch = () => {
   isEnteredMatch.value = true
 }
 
+const handleMatchFull = () => {
+  toast.add({
+    title: 'Match is full! Redirecting to homepage...',
+    timeout: 5000,
+    callback: redirectToHome,
+  })
+}
+
 onMounted(async () => {
   const docSnap = await getDoc(doc($db, 'matches', matchId))
 
@@ -111,6 +115,11 @@ onMounted(async () => {
 
   match.value = docSnap.data() as TMatch
   if (!isPlayerInMatch.value) {
+    if (isMatchFull.value) {
+      handleMatchFull()
+      return
+    }
+
     openProfileModal()
     return
   }

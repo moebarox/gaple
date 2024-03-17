@@ -1,8 +1,8 @@
 <template>
-  <div class="w-screen h-screen flex flex-col items-center justify-center gap-8">
+  <div class="w-screen h-dvh flex flex-col items-center justify-center gap-8">
     <!-- TODO: add share match & QR code -->
     <div v-if="isRoomMaster" class="flex flex-col items-center gap-4">
-      <div v-if="isMatchFull">Match is full! Start the next match</div>
+      <div v-if="isMatchFull">Match is full! Start the match now</div>
       <div v-else>Need {{ MAX_PLAYERS - players.length }} more players to start the match</div>
 
       <UButton size="lg" color="primary" variant="solid" :disabled="players.length < MAX_PLAYERS" @click="startMatch">

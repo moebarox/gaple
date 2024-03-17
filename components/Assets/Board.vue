@@ -16,7 +16,7 @@
         v-for="card in board"
         :key="card"
         :card="card"
-        :width="35"
+        :width="cardSize / 2"
         class="absolute"
         :style="generateCardStyle(card)"
       />
@@ -34,8 +34,9 @@
 </template>
 
 <script setup lang="ts">
-import { BOARD_CARD_LENGTH, BOARD_POSITION, CARD_DIRECTION } from '#imports'
+import { BOARD_POSITION, CARD_DIRECTION } from '#imports'
 
+const { $viewport } = useNuxtApp()
 const { board, totalRows, cardPerRow, getRow, getColumn, getDirection, getRelativeIdx, getCardPosition } = useBoard()
 
 const props = defineProps<{
@@ -51,9 +52,18 @@ const emits = defineEmits<{
 const innerBoard = ref<HTMLDivElement | null>(null)
 const innerBoardWidth = ref(0)
 const innerBoardHeight = ref(0)
+const cardSize = ref(70)
 
-const topPadding = computed(() => (innerBoardHeight.value - BOARD_CARD_LENGTH * totalRows.value) / 2)
-const leftPadding = computed(() => (innerBoardWidth.value - BOARD_CARD_LENGTH * cardPerRow.value) / 2)
+const topPadding = computed(() => (innerBoardHeight.value - cardSize.value * totalRows.value) / 2)
+const leftPadding = computed(() => (innerBoardWidth.value - cardSize.value * cardPerRow.value) / 2)
+
+watch(
+  $viewport.breakpoint,
+  () => {
+    cardSize.value = $viewport.isGreaterOrEquals('md') ? 70 : 60
+  },
+  { immediate: true }
+)
 
 const generatePositionStyle = (position: BOARD_POSITION) => {
   const relativeIdx = position === BOARD_POSITION.head ? getRelativeIdx(0) - 1 : getRelativeIdx(board.value.length)
@@ -75,21 +85,21 @@ const generateCardStyle = (card: string) => {
 const generateStyle = (row: number, col: number, direction: CARD_DIRECTION, isReversed?: boolean) => {
   const style: Record<string, string> = {}
 
-  let top = topPadding.value + row * BOARD_CARD_LENGTH
-  let left = leftPadding.value + col * BOARD_CARD_LENGTH
+  let top = topPadding.value + row * cardSize.value
+  let left = leftPadding.value + col * cardSize.value
 
   if (direction === CARD_DIRECTION.left) {
     if (col === 0) {
-      top += BOARD_CARD_LENGTH / 4
-      left += BOARD_CARD_LENGTH / 4
+      top += cardSize.value / 4
+      left += cardSize.value / 4
     }
   } else {
-    left += BOARD_CARD_LENGTH / 4
+    left += cardSize.value / 4
 
     if (col === cardPerRow.value - 1) {
-      top += BOARD_CARD_LENGTH / 4
+      top += cardSize.value / 4
     } else {
-      left += BOARD_CARD_LENGTH / 4
+      left += cardSize.value / 4
     }
   }
 
@@ -130,7 +140,7 @@ const calculateBoardSize = () => {
     return
   }
 
-  cardPerRow.value = Math.floor(innerBoard.value.offsetWidth / BOARD_CARD_LENGTH)
+  cardPerRow.value = Math.floor(innerBoard.value.offsetWidth / cardSize.value)
   innerBoardWidth.value = innerBoard.value.offsetWidth
   innerBoardHeight.value = innerBoard.value.offsetHeight
 }

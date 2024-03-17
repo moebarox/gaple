@@ -1,6 +1,5 @@
 export const DEFAULT_CARD_WIDTH = 70
 export const DEFAULT_CARD_HEIGHT = 140
-export const BOARD_CARD_LENGTH = 70
 
 export const HORIZONTAL_SPRITE_COUNT = 7
 export const VERTICAL_SPRITE_COUNT = 4
