@@ -19,8 +19,8 @@
     />
 
     <div class="absolute text-center bottom-0 w-full">
-      <UButton v-if="isMatchOver && isRoomMaster" size="lg" color="primary" variant="solid" @click="nextRound">
-        Start Next Round!
+      <UButton v-if="isMatchOver && isRoomMaster" size="lg" color="primary" variant="solid" @click="newRound">
+        {{ $t('action.newRound') }}
       </UButton>
 
       <div class="flex flex-col items-center md:flex-row-reverse">
@@ -64,6 +64,7 @@ import {
 
 const route = useRoute()
 const { $db, $viewport } = useNuxtApp()
+const { t } = useI18n()
 const { user } = useUser()
 const toast = useToast()
 const {
@@ -116,7 +117,7 @@ const handleTurn = async doc => {
 
   if (isMatchOver.value) {
     toast.add({
-      title: 'Game over! Waiting for room master to start a new match...',
+      title: t('notification.matchOver'),
       timeout: DEFAULT_TOAST_TIMEOUT,
     })
     return
@@ -130,7 +131,7 @@ const handleTurn = async doc => {
     await new Promise(resolve => setTimeout(resolve, 1000))
 
     toast.add({
-      title: 'No more possible cards! Skipping turn...',
+      title: t('notification.skipTurn'),
       timeout: 5000,
       click: () => {
         skipTurn()
@@ -144,7 +145,7 @@ const handleTurn = async doc => {
   }
 
   toast.add({
-    title: 'Your turn!',
+    title: t('notification.yourTurn'),
     timeout: DEFAULT_TOAST_TIMEOUT,
   })
 }
@@ -191,7 +192,7 @@ const handleSelectCard = (card: string) => {
     selectedCard.value = card
     turnState.value = TURN_STATE.selectPosition
     toast.add({
-      title: 'Please select where to place card on the board!',
+      title: t('notification.selectPosition'),
       timeout: DEFAULT_TOAST_TIMEOUT,
     })
     return
@@ -264,7 +265,7 @@ const endTurn = () => {
   selectedCard.value = ''
 }
 
-const nextRound = () => {
+const newRound = () => {
   if (!isRoomMaster.value) {
     return
   }

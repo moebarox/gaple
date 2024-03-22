@@ -1,0 +1,56 @@
+{
+  "action": {
+    "createMatch": "Create a New Game",
+    "enterMatch": "Enter Game",
+    "inviteOthers": "Invite Others",
+    "joinMatch": "Join Existing Game",
+    "leaveMatch": "Leave Match",
+    "newRound": "Start Next Round",
+    "startMatch": "Start Match"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "no": "No",
+    "yes": "Yes"
+  },
+  "confirm": {
+    "kick": {
+      "text": "Are you sure you want to kick {playerName}?"
+    }
+  },
+  "form": {
+    "isPrivate": {
+      "label": "Is this game private?"
+    },
+    "matchId": {
+      "label": "Enter match ID"
+    },
+    "name": {
+      "label": "Enter your name"
+    },
+    "password": {
+      "label": "Enter password"
+    }
+  },
+  "info": {
+    "matchFull": "All players are ready. Let's start the game!",
+    "needPlayer": "Need {num} more players to start the match",
+    "waitingToStart": "Waiting room master to start the match..."
+  },
+  "notification": {
+    "copiedToClipboard": "Copied to clipboard!",
+    "error": "An error occured",
+    "gameOver": "Game over! Waiting for room master to start a new match...",
+    "kicked": "You are kicked! Redirecting to homepage...",
+    "leftMatch": "Left match! Redirecting to homepage...",
+    "matchFull": "Match is full! Redirecting to homepage...",
+    "playerKicked": "{playerName} was kicked",
+    "selectPosition": "Please select where to place card on the board!",
+    "skipTurn": "No more possible cards! Skipping turn...",
+    "wrongPassword": "Wrong password!",
+    "yourTurn": "Your turn!"
+  },
+  "placeholder": {
+    "share": "You are challenged to join Gaple Battle! Join now {url}"
+  }
+}

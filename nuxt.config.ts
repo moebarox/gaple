@@ -35,39 +35,54 @@ export default defineNuxtConfig({
       viewport: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no',
     },
   },
-  modules: [
-    '@nuxt/ui',
-    [
-      'nuxt-viewport',
-      {
-        breakpoints: {
-          xs: 320,
-          sm: 640,
-          md: 768,
-          lg: 1024,
-          xl: 1280,
-          '2xl': 1536,
-        },
-
-        defaultBreakpoints: {
-          desktop: 'lg',
-          mobile: 'xs',
-          tablet: 'md',
-        },
-
-        fallbackBreakpoint: 'lg',
-      },
-    ],
-  ],
+  modules: ['@nuxt/ui', '@nuxtjs/i18n', 'nuxt-viewport'],
   css: ['~/assets/css/main.css'],
+  routeRules: {
+    '*': { ssr: false },
+  },
   postcss: {
     plugins: {
       tailwindcss: {},
       autoprefixer: {},
     },
   },
-  routeRules: {
-    '*': { ssr: false },
+  i18n: {
+    legacy: false,
+    lazy: true,
+    locale: 'id',
+    strategy: 'no_prefix',
+    defaultLocale: 'id',
+    fallbackLocale: 'id',
+    detectBrowserLanguage: false,
+    langDir: './locales',
+    locales: [
+      {
+        code: 'id',
+        iso: 'id-ID',
+        file: 'id-ID.json',
+      },
+      {
+        code: 'en',
+        iso: 'en-US',
+        file: 'en-US.json',
+      },
+    ],
+  },
+  viewport: {
+    breakpoints: {
+      xs: 320,
+      sm: 640,
+      md: 768,
+      lg: 1024,
+      xl: 1280,
+      '2xl': 1536,
+    },
+    defaultBreakpoints: {
+      desktop: 'lg',
+      mobile: 'xs',
+      tablet: 'md',
+    },
+    fallbackBreakpoint: 'lg',
   },
   imports: {
     dirs: ['constants/**/*.ts', 'types/**/*.ts'],

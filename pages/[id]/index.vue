@@ -9,11 +9,11 @@
   <UModal v-model="isProfileModalOpen" prevent-close>
     <form class="flex flex-col gap-8 p-8" @submit.prevent="enterMatch">
       <div class="flex flex-col gap-2">
-        <div>Enter your name</div>
+        <div>{{ $t('form.name.label') }}</div>
         <UInput v-model="name" size="lg" />
       </div>
       <div v-if="settings.password" class="flex flex-col gap-2">
-        <div>Enter password</div>
+        <div>{{ $t('form.password.label') }}</div>
         <UInput v-model="password" size="lg" />
       </div>
       <UButton
@@ -24,7 +24,7 @@
         type="submit"
         :disabled="isRequirePassword && password.length < MIN_PASSWORD_LENGTH"
       >
-        Enter Game
+        {{ $t('action.enterMatch') }}
       </UButton>
     </form>
   </UModal>
@@ -42,6 +42,7 @@ const router = useRouter()
 const route = useRoute()
 const toast = useToast()
 const { $db } = useNuxtApp()
+const { t } = useI18n()
 const { user, setName } = useUser()
 const { match, settings, state, isPlayerInMatch, isMatchFull } = useMatch()
 
@@ -71,7 +72,7 @@ const redirectToHome = () => {
 
 const enterMatch = () => {
   if (!isPlayerInMatch.value && isRequirePassword.value && password.value !== settings.value.password) {
-    toast.add({ title: 'Wrong password!', timeout: DEFAULT_TOAST_TIMEOUT })
+    toast.add({ title: t('notification.wrongPassword'), timeout: DEFAULT_TOAST_TIMEOUT })
     return
   }
 
@@ -100,7 +101,7 @@ const enterMatch = () => {
 
 const handleMatchFull = () => {
   toast.add({
-    title: 'Match is full! Redirecting to homepage...',
+    title: t('notification.matchFull'),
     timeout: 5000,
     callback: redirectToHome,
   })

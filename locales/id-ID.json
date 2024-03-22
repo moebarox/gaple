@@ -1,0 +1,56 @@
+{
+  "action": {
+    "createMatch": "Buat Permainan Baru",
+    "enterMatch": "Masuk ke Permainan",
+    "inviteOthers": "Undang Pemain Lain",
+    "joinMatch": "Bergabung ke Permainan",
+    "leaveMatch": "Keluar Permainan",
+    "newRound": "Mulai Permainan Baru",
+    "startMatch": "Mulai Permainan"
+  },
+  "common": {
+    "cancel": "Batal",
+    "no": "Tidak",
+    "yes": "Ya"
+  },
+  "confirm": {
+    "kick": {
+      "text": "Apakah anda yakin ingin mengeluarkan {playerName}?"
+    }
+  },
+  "form": {
+    "isPrivate": {
+      "label": "Apakah permainan ini privat?"
+    },
+    "matchId": {
+      "label": "Masukkan ID Permainan"
+    },
+    "name": {
+      "label": "Masukkan nama Anda"
+    },
+    "password": {
+      "label": "Masukkan kata sandi"
+    }
+  },
+  "info": {
+    "matchFull": "Pemain sudah lengkap. Mulai permainan sekarang!",
+    "needPlayer": "Butuh {num} pemain lagi untuk memulai permainan",
+    "waitingToStart": "Menunggu admin memulai permainan..."
+  },
+  "notification": {
+    "copiedToClipboard": "Tersalin ke clipboard!",
+    "error": "Terjadi kesalahan",
+    "gameOver": "Permainan berakhir! Menunggu admin memulai permainan baru...",
+    "kicked": "Anda telah dikeluarkan dari permainan! Mengarahkan ke halaman utama...",
+    "leftMatch": "Anda telah keluar dari permainan! Mengarahkan ke halaman utama...",
+    "matchFull": "Permainan penuh! Mengarahkan ke halaman utama...",
+    "playerKicked": "{playerName} telah dikeluarkan dari permainan",
+    "selectPosition": "Silakan pilih posisi kartu yang ingin Anda tempatkan",
+    "skipTurn": "Kamu tidak memiliki kartu untuk ditempatkan! Melanjutkan ke pemain lain...",
+    "wrongPassword": "Kata sandi salah!",
+    "yourTurn": "Giliranmu!"
+  },
+  "placeholder": {
+    "share": "Anda ditantang untuk bergabung di Gaple Battle! Bergabung sekarang {url}"
+  }
+}

@@ -11,7 +11,7 @@
           class="w-full justify-center px-8 md:w-auto"
           @click="openCreateMatchModal"
         >
-          Create a New Game
+          {{ $t('action.createMatch') }}
         </UButton>
       </div>
       <div class="grow md:grow-0">
@@ -22,46 +22,58 @@
           class="w-full justify-center px-8 md:w-auto"
           @click="openJoinMatchModal"
         >
-          Join Existing Game
+          {{ $t('action.joinMatch') }}
         </UButton>
       </div>
     </div>
   </div>
 
-  <UModal v-model="isCreateModalOpen">
+  <UModal v-model="isCreateModalOpen" prevent-close>
     <form class="flex flex-col gap-8 p-8" @submit.prevent="createMatch">
       <div class="flex flex-col gap-2">
-        <div>Enter your name</div>
+        <div>{{ $t('form.name.label') }}</div>
         <UInput v-model="name" size="lg" />
       </div>
       <div class="flex flex-col gap-2">
-        <div>Is this game private?</div>
+        <div>{{ $t('form.isPrivate.label') }}</div>
         <UToggle v-model="isMatchPrivate" />
       </div>
       <div v-if="isMatchPrivate" class="flex flex-col gap-2">
-        <div>Enter password</div>
+        <div>{{ $t('form.password.label') }}</div>
         <UInput v-model="password" size="lg" />
       </div>
-      <UButton
-        block
-        size="lg"
-        color="primary"
-        variant="solid"
-        type="submit"
-        :disabled="isMatchPrivate && password.length < MIN_PASSWORD_LENGTH"
-      >
-        Create Game
-      </UButton>
+
+      <div class="flex flex-col gap-4">
+        <UButton
+          block
+          size="lg"
+          color="primary"
+          variant="solid"
+          type="submit"
+          :disabled="isMatchPrivate && password.length < MIN_PASSWORD_LENGTH"
+        >
+          {{ $t('action.createMatch') }}
+        </UButton>
+        <UButton block size="lg" color="red" variant="solid" @click="closeCreateModal">
+          {{ $t('common.cancel') }}
+        </UButton>
+      </div>
     </form>
   </UModal>
 
-  <UModal v-model="isJoinModalOpen">
+  <UModal v-model="isJoinModalOpen" prevent-close>
     <form class="flex flex-col gap-8 p-8" @submit.prevent="joinMatch">
       <div class="flex flex-col gap-2">
-        <div>Enter match id</div>
+        <div>{{ $t('form.matchId.label') }}</div>
         <UInput v-model="matchId" size="lg" />
       </div>
-      <UButton block size="lg" color="primary" variant="solid" type="submit">Join Game</UButton>
+
+      <div class="flex flex-col gap-4">
+        <UButton block size="lg" color="primary" variant="solid" type="submit">{{ $t('action.joinMatch') }}</UButton>
+        <UButton block size="lg" color="red" variant="solid" @click="closeJoinModal">
+          {{ $t('common.cancel') }}
+        </UButton>
+      </div>
     </form>
   </UModal>
 </template>
@@ -123,9 +135,17 @@ const openCreateMatchModal = () => {
   isCreateModalOpen.value = true
 }
 
+const closeCreateModal = () => {
+  isCreateModalOpen.value = false
+}
+
 const openJoinMatchModal = () => {
   matchId.value = ''
   isJoinModalOpen.value = true
+}
+
+const closeJoinModal = () => {
+  isJoinModalOpen.value = false
 }
 
 const joinMatch = () => {
