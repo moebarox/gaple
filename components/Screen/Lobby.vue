@@ -1,5 +1,5 @@
 <template>
-  <div class="w-screen h-dvh flex flex-col items-center justify-center gap-8">
+  <div class="w-screen h-dvh flex flex-col items-center justify-center gap-8 p-8">
     <!-- TODO: add share match & QR code -->
     <div v-if="isPlayerInMatch" class="flex flex-col items-center gap-4">
       <template v-if="isMatchFull">
@@ -96,7 +96,6 @@ const inviteOthers = () => {
   }
 
   try {
-    throw new Error('hehe')
     if (navigator.canShare(shareData)) {
       navigator.share(shareData)
     } else {
