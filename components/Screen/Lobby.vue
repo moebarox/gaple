@@ -1,6 +1,5 @@
 <template>
   <div class="w-screen h-dvh flex flex-col items-center justify-center gap-8 p-8">
-    <!-- TODO: add share match & QR code -->
     <div v-if="isPlayerInMatch" class="flex flex-col items-center gap-4">
       <template v-if="isMatchFull">
         <div v-if="isRoomMaster">
@@ -64,6 +63,7 @@ const { match, settings, state, players, currentPlayer, isRoomMaster, isPlayerIn
 const matchId = route.params.id as string
 
 const unsubWaitForPlayers = ref()
+const isLeaveMatch = ref(false)
 
 const startMatch = async () => {
   if (!isRoomMaster.value) {
@@ -78,7 +78,7 @@ const startMatch = async () => {
 
   const firstTurnPlayer = findCardOwner(playersWithCards, FIRST_TURN_CARD)
 
-  updateDoc(doc($db, 'matches', matchId), {
+  await updateDoc(doc($db, 'matches', matchId), {
     players: playersWithCards,
     'state.round': 1,
     'state.turn': firstTurnPlayer?.id,
@@ -90,40 +90,45 @@ const redirectToHome = () => {
   router.replace({ name: 'index' })
 }
 
-const inviteOthers = () => {
+const copyInvitation = (text: string) => {
+  navigator.clipboard.writeText(text)
+  toast.add({
+    title: t('notification.copiedToClipboard'),
+    timeout: DEFAULT_TOAST_TIMEOUT,
+  })
+}
+
+const inviteOthers = async () => {
+  // TODO: add QR code on share
   const shareData: ShareData = {
     text: t('placeholder.share', { url: window.location.href }),
   }
 
-  try {
-    if (navigator.canShare(shareData)) {
-      navigator.share(shareData)
-    } else {
-      navigator.clipboard.writeText(shareData.text!)
+  if (!navigator.canShare) {
+    copyInvitation(shareData.text!)
+    return
+  }
+
+  if (navigator.canShare(shareData)) {
+    try {
+      await navigator.share(shareData)
+    } catch (err) {
+      console.error(err)
       toast.add({
-        title: t('notification.copiedToClipboard'),
+        title: t('notification.error'),
+        timeout: DEFAULT_TOAST_TIMEOUT,
       })
     }
-  } catch (err) {
-    console.error(err)
-    toast.add({
-      title: t('notification.error'),
-      timeout: DEFAULT_TOAST_TIMEOUT,
-    })
+  } else {
+    copyInvitation(shareData.text!)
   }
 }
 
 const leaveMatch = async () => {
+  isLeaveMatch.value = true
+
   await updateDoc(doc($db, 'matches', matchId), {
     players: arrayRemove(currentPlayer.value),
-  })
-
-  unsubFirestore()
-
-  toast.add({
-    title: t('notification.leftMatch'),
-    timeout: 5000,
-    callback: redirectToHome,
   })
 }
 
@@ -160,7 +165,7 @@ const handleWaitForPlayers = doc => {
     unsubFirestore()
 
     toast.add({
-      title: t('notification.kicked'),
+      title: isLeaveMatch.value ? t('notification.leftMatch') : t('notification.kicked'),
       timeout: 5000,
       callback: redirectToHome,
     })
@@ -182,7 +187,7 @@ onMounted(() => {
   unsubWaitForPlayers.value = onSnapshot(doc($db, 'matches', route.params.id as string), handleWaitForPlayers)
 })
 
-onUnmounted(() => {
+onBeforeUnmount(() => {
   unsubFirestore()
 })
 </script>

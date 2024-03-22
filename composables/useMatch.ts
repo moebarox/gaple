@@ -1,4 +1,4 @@
-import { MAX_PLAYERS } from '#imports'
+import { MAX_PLAYERS, PENALTY_POINT_TRESHOLD } from '#imports'
 
 export const useMatch = () => {
   const { user } = useUser()
@@ -15,6 +15,9 @@ export const useMatch = () => {
   const playerIdx = computed(() => players.value.findIndex(p => p.id === user.value.id))
   const currentPlayer = computed<TMatchPlayer>(() => getPlayer(user.value.id))
   const nextPlayer = computed<TMatchPlayer>(() => players.value[playerIdx.value + 1] ?? players.value[0])
+  const rtPlayer = computed<TMatchPlayer>(
+    () => players.value.filter(p => p.penalty >= PENALTY_POINT_TRESHOLD).sort((a, b) => b.penalty - a.penalty)[0]
+  )
 
   const isRoomMaster = computed(() => match.value?.settings?.roomMaster === user.value.id)
   const isPlayerInMatch = computed(() => players.value.some(p => p.id === user.value.id))
@@ -39,6 +42,7 @@ export const useMatch = () => {
     playerIdx,
     currentPlayer,
     nextPlayer,
+    rtPlayer,
     isRoomMaster,
     isPlayerInMatch,
     isMatchFull,

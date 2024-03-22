@@ -24,7 +24,7 @@
         }"
       >
         <div
-          class="relative w-12 h-12 md:w-20 md:h-20"
+          class="relative w-12 h-12 rounded-full shadow-lg md:w-20 md:h-20"
           :class="{
             'before:w-full before:h-full before:absolute before:top-0 before:left-0 before:rounded-full before:animate-ping before:bg-gray-600':
               isHighlighted,
@@ -48,12 +48,14 @@
             'items-end text-right': isPositionRight,
           }"
         >
-          <div class="text-lg font-bold">{{ player.name }}</div>
+          <div class="text-ellipsis overflow-hidden font-bold max-w-20 md:text-lg">{{ player.name }}</div>
           <div
-            class="flex items-start gap-1 md:flex-row"
+            class="flex gap-1"
             :class="{
               'flex-col': isPositionLeft || isPositionRight,
+              'items-start': isPositionLeft,
               'items-end': isPositionRight,
+              'items-center': isPositionTop || isPositionBottom,
             }"
           >
             <UBadge color="black" :ui="{ rounded: 'rounded-full' }">
@@ -68,12 +70,12 @@
                 <span>{{ player.penalty }}</span>
               </UBadge>
 
-              <Transition name="raise">
+              <Transition name="raise" @after-enter="clearPenaltyPoint">
                 <UBadge
                   v-if="penaltyPoint"
                   color="black"
                   :ui="{ rounded: 'rounded-full' }"
-                  class="absolute top-0 right-0 opacity-0"
+                  class="absolute top-0 right-0 opacity-100"
                 >
                   {{ penaltyPoint }}
                 </UBadge>
@@ -90,7 +92,7 @@
             'left-0': isPositionTop || isPositionLeft || isPositionBottom,
           }"
         >
-          <AssetsDomino v-for="card in player.cards" :key="card" :card="card" :width="35" />
+          <AssetsDomino v-for="card in player.cards" :key="card" :card="card" :width="35" class="shadow-lg" />
         </div>
       </div>
     </div>
@@ -129,23 +131,19 @@ watch(
 
 const updatePenalty = (diff: number) => {
   penaltyPoint.value = diff > 0 ? `+${diff}` : `${diff}`
+}
 
-  setTimeout(() => {
-    penaltyPoint.value = ''
-  }, 900)
+const clearPenaltyPoint = () => {
+  penaltyPoint.value = ''
 }
 </script>
 
 <style scoped lang="scss">
-.raise-enter-active {
+.raise-leave-active {
   @apply transition-all duration-1000;
 }
 
-.raise-enter-from {
-  @apply opacity-100;
-}
-
-.raise-enter-to {
+.raise-leave-to {
   @apply opacity-0 -translate-y-4;
 }
 </style>

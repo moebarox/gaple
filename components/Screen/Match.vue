@@ -19,10 +19,6 @@
     />
 
     <div class="absolute text-center bottom-0 w-full">
-      <UButton v-if="isMatchOver && isRoomMaster" size="lg" color="primary" variant="solid" @click="newRound">
-        {{ $t('action.newRound') }}
-      </UButton>
-
       <div class="flex flex-col items-center md:flex-row-reverse">
         <div class="flex justify-center grow gap-3 p-2 md:justify-end md:gap-4 md:p-4">
           <AssetsDomino
@@ -46,11 +42,22 @@
         />
       </div>
     </div>
+
+    <UButton
+      v-if="isMatchOver && isRoomMaster"
+      size="lg"
+      color="primary"
+      variant="solid"
+      class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 drop-shadow-2xl"
+      @click="newRound"
+    >
+      {{ $t('action.newRound') }}
+    </UButton>
   </div>
 </template>
 
 <script setup lang="ts">
-import { doc, onSnapshot, updateDoc, increment } from 'firebase/firestore'
+import { doc, onSnapshot, updateDoc, increment, type DocumentData } from 'firebase/firestore'
 
 import {
   TURN_STATE,
@@ -77,6 +84,7 @@ const {
   playerIdx,
   currentPlayer,
   nextPlayer,
+  rtPlayer,
   isRoomMaster,
   isPlayerTurn,
   isMatchOver,
@@ -117,9 +125,17 @@ const handleTurn = async doc => {
 
   if (isMatchOver.value) {
     toast.add({
-      title: t('notification.matchOver'),
-      timeout: DEFAULT_TOAST_TIMEOUT,
+      title: t('notification.gameOver'),
+      timeout: 5000,
     })
+
+    if (rtPlayer.value) {
+      toast.add({
+        title: t('notification.newRT', { name: rtPlayer.value.name, point: rtPlayer.value.penalty }),
+        timeout: 5000,
+      })
+    }
+
     return
   }
 
@@ -150,7 +166,7 @@ const handleTurn = async doc => {
   })
 }
 
-const skipTurn = () => {
+const skipTurn = async () => {
   const lastTurnPlayer = players.value.find(p => p.id === state.value.lastTurn)
   const playersWithPenalty = players.value.map(p => {
     if (p.id === lastTurnPlayer?.id) {
@@ -168,7 +184,7 @@ const skipTurn = () => {
     }
   })
 
-  updateDoc(doc($db, 'matches', matchId), {
+  await updateDoc(doc($db, 'matches', matchId), {
     players: playersWithPenalty,
     'state.turn': nextPlayer.value.id,
   })
@@ -233,7 +249,7 @@ const putCard = async (card: string, position: BOARD_POSITION) => {
     }
   })
 
-  const payload = {
+  const payload: DocumentData = {
     players: updatedPlayers,
     'state.board': board.value,
     'state.turn': nextPlayer.value.id,
@@ -265,7 +281,7 @@ const endTurn = () => {
   selectedCard.value = ''
 }
 
-const newRound = () => {
+const newRound = async () => {
   if (!isRoomMaster.value) {
     return
   }
@@ -276,13 +292,21 @@ const newRound = () => {
     cards: shuffledCards.splice(0, 7),
   }))
 
-  const payload = {
+  const payload: DocumentData = {
     players: playersWithCards,
     'state.board': [],
     'state.round': increment(1),
     'state.turn': state.value.lastTurn,
     'state.lastTurn': '',
     'state.firstTurnCard': '',
+  }
+
+  if (rtPlayer.value) {
+    payload['state.rt'] = rtPlayer.value.id
+    payload.players = payload.players.map(p => ({
+      ...p,
+      penalty: 0,
+    }))
   }
 
   if (isMatchDraw.value) {
@@ -304,7 +328,7 @@ const newRound = () => {
     payload['state.firstTurnCard'] = firstTurnCard
   }
 
-  updateDoc(doc($db, 'matches', matchId), payload)
+  await updateDoc(doc($db, 'matches', matchId), payload)
 }
 
 const unsubFirestore = () => {
@@ -317,7 +341,7 @@ onMounted(() => {
   unsubGameplay.value = onSnapshot(doc($db, 'matches', matchId), handleTurn)
 })
 
-onUnmounted(() => {
+onBeforeUnmount(() => {
   unsubFirestore()
 })
 </script>

@@ -23,6 +23,6 @@ export const POLDAN_POINT = 1
 export const LAST_BALAK_POINT = 2
 
 /**
- * The first player who got the treshold is the loser
+ * The first player who got the treshold is the loser (RT)
  */
 export const PENALTY_POINT_TRESHOLD = 7

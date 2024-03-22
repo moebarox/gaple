@@ -70,7 +70,7 @@ const redirectToHome = () => {
   router.replace({ name: 'index' })
 }
 
-const enterMatch = () => {
+const enterMatch = async () => {
   if (!isPlayerInMatch.value && isRequirePassword.value && password.value !== settings.value.password) {
     toast.add({ title: t('notification.wrongPassword'), timeout: DEFAULT_TOAST_TIMEOUT })
     return
@@ -86,7 +86,7 @@ const enterMatch = () => {
   }
 
   if (!isPlayerInMatch.value) {
-    updateDoc(doc($db, 'matches', matchId), {
+    await updateDoc(doc($db, 'matches', matchId), {
       players: arrayUnion({
         id: user.value.id,
         name: user.value.name,

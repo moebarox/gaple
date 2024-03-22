@@ -44,6 +44,7 @@
     "kicked": "You are kicked! Redirecting to homepage...",
     "leftMatch": "Left match! Redirecting to homepage...",
     "matchFull": "Match is full! Redirecting to homepage...",
+    "newRT": "{name} has {point} point. {name} is now a new RT.",
     "playerKicked": "{playerName} was kicked",
     "selectPosition": "Please select where to place card on the board!",
     "skipTurn": "No more possible cards! Skipping turn...",

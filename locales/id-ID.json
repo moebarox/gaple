@@ -44,6 +44,7 @@
     "kicked": "Anda telah dikeluarkan dari permainan! Mengarahkan ke halaman utama...",
     "leftMatch": "Anda telah keluar dari permainan! Mengarahkan ke halaman utama...",
     "matchFull": "Permainan penuh! Mengarahkan ke halaman utama...",
+    "newRT": "{name} memiliki {point} poin. {name} menjadi RT baru.",
     "playerKicked": "{playerName} telah dikeluarkan dari permainan",
     "selectPosition": "Silakan pilih posisi kartu yang ingin Anda tempatkan",
     "skipTurn": "Kamu tidak memiliki kartu untuk ditempatkan! Melanjutkan ke pemain lain...",
