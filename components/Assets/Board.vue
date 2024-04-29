@@ -6,6 +6,9 @@
       <div
         v-if="showHeadPlaceholder || board.length === 0"
         class="absolute rounded-md bg-[#2e3d58] border-[1px] border-dashed border-[#3d5172] w-[30px] h-[60px] z-10 md:w-[35px] md:h-[70px]"
+        :class="{
+          'cursor-pointer': canSelectPosition,
+        }"
         :style="generatePositionStyle(BOARD_POSITION.head)"
         @click="handleSelect(BOARD_POSITION.head)"
       ></div>
@@ -20,6 +23,9 @@
       <div
         v-if="showTailPlaceholder && board.length > 0"
         class="absolute rounded-md bg-[#2e3d58] border-[1px] border-dashed border-[#3d5172] w-[30px] h-[60px] z-10 md:w-[35px] md:h-[70px]"
+        :class="{
+          'cursor-pointer': canSelectPosition,
+        }"
         :style="generatePositionStyle(BOARD_POSITION.tail)"
         @click="handleSelect(BOARD_POSITION.tail)"
       ></div>
