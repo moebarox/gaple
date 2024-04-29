@@ -67,6 +67,7 @@ import {
   GAPLE_POINT,
   POLDAN_POINT,
   DEFAULT_TOAST_TIMEOUT,
+  MEDIUM_TOAST_TIMEOUT,
 } from '#imports'
 
 const route = useRoute()
@@ -126,13 +127,13 @@ const handleTurn = async doc => {
   if (isMatchOver.value) {
     toast.add({
       title: t('notification.gameOver'),
-      timeout: 5000,
+      timeout: MEDIUM_TOAST_TIMEOUT,
     })
 
     if (rtPlayer.value) {
       toast.add({
         title: t('notification.newRT', { name: rtPlayer.value.name, point: rtPlayer.value.penalty }),
-        timeout: 5000,
+        timeout: MEDIUM_TOAST_TIMEOUT,
       })
     }
 
@@ -148,7 +149,7 @@ const handleTurn = async doc => {
 
     toast.add({
       title: t('notification.skipTurn'),
-      timeout: 5000,
+      timeout: MEDIUM_TOAST_TIMEOUT,
       click: () => {
         skipTurn()
       },

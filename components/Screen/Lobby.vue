@@ -47,7 +47,7 @@
 <script setup lang="ts">
 import { doc, onSnapshot, updateDoc, arrayRemove } from 'firebase/firestore'
 
-import { FIRST_TURN_CARD, MAX_PLAYERS, type TMatchPlayer } from '#imports'
+import { FIRST_TURN_CARD, MAX_PLAYERS, DEFAULT_TOAST_TIMEOUT, MEDIUM_TOAST_TIMEOUT, type TMatchPlayer } from '#imports'
 
 const emits = defineEmits<{
   (e: 'start', match: TMatch): void
@@ -166,7 +166,7 @@ const handleWaitForPlayers = doc => {
 
     toast.add({
       title: isLeaveMatch.value ? t('notification.leftMatch') : t('notification.kicked'),
-      timeout: 5000,
+      timeout: MEDIUM_TOAST_TIMEOUT,
       callback: redirectToHome,
     })
     return
