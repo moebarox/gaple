@@ -41,8 +41,13 @@ export const useBoard = () => {
   watch(
     () => board.value,
     () => {
-      if (firstCard.value || board.value.length === 0) {
+      if (firstCard.value && board.value.length > 0) {
         return
+      }
+
+      // Reset firstCard when starting a new round
+      if (board.value.length === 0) {
+        firstCard.value = ''
       }
 
       firstCard.value = board.value[0]
