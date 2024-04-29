@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-[url('/images/dominoes.png')] shrink-0 transition-all"
+    class="bg-[url('/images/dominoes.png')] shrink-0"
     :class="{
       'cursor-pointer': isSelectable,
       'cursor-not-allowed opacity-50': isDisabled,

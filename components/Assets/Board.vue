@@ -5,29 +5,21 @@
     <div ref="innerBoard" class="absolute w-5/6 h-5/6 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
       <div
         v-if="showHeadPlaceholder || board.length === 0"
-        class="absolute rounded-md bg-[#2e3d58] border-[1px] border-dashed border-[#3d5172] w-[30px] h-[60px] z-10 md:w-[35px] md:h-[70px] before:absolute before:top-0 before:left-0 before:right-0 before:bottom-0 before:rounded-md before:bg-[#2e3d58] before:pointer-events-none"
-        :class="{
-          'cursor-pointer before:animate-ping': canSelectPosition,
-        }"
+        class="absolute rounded-md bg-[#2e3d58] border-[1px] border-dashed border-[#3d5172] w-[30px] h-[60px] z-10 md:w-[35px] md:h-[70px]"
         :style="generatePositionStyle(BOARD_POSITION.head)"
         @click="handleSelect(BOARD_POSITION.head)"
       ></div>
-      <TransitionGroup name="zoom-out">
-        <AssetsDomino
-          v-for="card in board"
-          :key="card"
-          :card="card"
-          :width="cardSize / 2"
-          class="absolute"
-          :style="generateCardStyle(card)"
-        />
-      </TransitionGroup>
+      <AssetsDomino
+        v-for="card in board"
+        :key="card"
+        :card="card"
+        :width="cardSize / 2"
+        class="absolute"
+        :style="generateCardStyle(card)"
+      />
       <div
         v-if="showTailPlaceholder && board.length > 0"
-        class="absolute rounded-md bg-[#2e3d58] border-[1px] border-dashed border-[#3d5172] w-[30px] h-[60px] z-10 md:w-[35px] md:h-[70px] before:absolute before:top-0 before:left-0 before:right-0 before:bottom-0 before:rounded-md before:bg-[#2e3d58] before:pointer-events-none"
-        :class="{
-          'cursor-pointer before:animate-ping': canSelectPosition,
-        }"
+        class="absolute rounded-md bg-[#2e3d58] border-[1px] border-dashed border-[#3d5172] w-[30px] h-[60px] z-10 md:w-[35px] md:h-[70px]"
         :style="generatePositionStyle(BOARD_POSITION.tail)"
         @click="handleSelect(BOARD_POSITION.tail)"
       ></div>
@@ -152,13 +144,3 @@ onMounted(() => {
   calculateBoardSize()
 })
 </script>
-
-<style scoped lang="scss">
-.zoom-out-enter-active {
-  @apply transition-all duration-500;
-}
-
-.zoom-out-enter-from {
-  @apply opacity-0;
-}
-</style>
