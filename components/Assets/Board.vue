@@ -1,11 +1,11 @@
 <template>
   <div
-    class="absolute top-10 left-6 right-6 bottom-28 md:top-28 md:left-36 md:right-36 bg-[#354566] rounded-full border-8 border-[#3d5172] drop-shadow-2xl shadow-inner before:absolute before:top-4 before:left-4 before:right-4 before:bottom-4 before:rounded-full before:border-2 before:border-[#3d5172] before:z-[-1]"
+    class="absolute top-16 left-8 right-8 bottom-28 bg-[#27aa48] rounded-full border-8 border-[#22933f] drop-shadow-2xl shadow-inner before:absolute before:top-4 before:left-4 before:right-4 before:bottom-4 before:rounded-full before:border-2 before:border-[#22933f] before:z-[-1]"
   >
     <div ref="innerBoard" class="absolute w-5/6 h-5/6 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
       <div
         v-if="showHeadPlaceholder || board.length === 0"
-        class="absolute rounded-md bg-[#2e3d58] border-[1px] border-dashed border-[#3d5172] w-[30px] h-[60px] z-10 md:w-[35px] md:h-[70px]"
+        class="absolute rounded-md bg-[#279a43] border-[1px] border-dashed border-[#22933f] w-[30px] h-[60px] z-10"
         :class="{
           'cursor-pointer': canSelectPosition,
         }"
@@ -22,7 +22,7 @@
       />
       <div
         v-if="showTailPlaceholder && board.length > 0"
-        class="absolute rounded-md bg-[#2e3d58] border-[1px] border-dashed border-[#3d5172] w-[30px] h-[60px] z-10 md:w-[35px] md:h-[70px]"
+        class="absolute rounded-md bg-[#279a43] border-[1px] border-dashed border-[#22933f] w-[30px] h-[60px] z-10"
         :class="{
           'cursor-pointer': canSelectPosition,
         }"
@@ -36,7 +36,6 @@
 <script setup lang="ts">
 import { BOARD_POSITION, CARD_DIRECTION } from '#imports'
 
-const { $viewport } = useNuxtApp()
 const { board, totalRows, cardPerRow, getRow, getColumn, getDirection, getRelativeIdx, getCardPosition } = useBoard()
 
 const props = defineProps<{
@@ -52,18 +51,10 @@ const emits = defineEmits<{
 const innerBoard = ref<HTMLDivElement | null>(null)
 const innerBoardWidth = ref(0)
 const innerBoardHeight = ref(0)
-const cardSize = ref(70)
+const cardSize = ref(60)
 
 const topPadding = computed(() => (innerBoardHeight.value - cardSize.value * totalRows.value) / 2)
 const leftPadding = computed(() => (innerBoardWidth.value - cardSize.value * cardPerRow.value) / 2)
-
-watch(
-  $viewport.breakpoint,
-  () => {
-    cardSize.value = $viewport.isGreaterOrEquals('md') ? 70 : 60
-  },
-  { immediate: true }
-)
 
 const generatePositionStyle = (position: BOARD_POSITION) => {
   const relativeIdx = position === BOARD_POSITION.head ? getRelativeIdx(0) - 1 : getRelativeIdx(board.value.length)

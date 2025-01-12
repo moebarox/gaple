@@ -1,5 +1,5 @@
 <template>
-  <div class="w-screen h-dvh flex flex-col items-center justify-center gap-8 p-8">
+  <div class="h-dvh flex flex-col items-center justify-center gap-8 p-8">
     <div v-if="isPlayerInMatch" class="flex flex-col items-center gap-4">
       <template v-if="isMatchFull">
         <div v-if="isRoomMaster">
@@ -13,7 +13,7 @@
         <UButton v-if="isRoomMaster && isMatchFull" size="lg" color="primary" variant="solid" @click="startMatch">
           {{ $t('action.startMatch') }}
         </UButton>
-        <UButton size="lg" color="blue" variant="solid" @click="inviteOthers">
+        <UButton size="lg" color="blue" variant="solid" :disabled="isMatchFull" @click="inviteOthers">
           {{ $t('action.inviteOthers') }}
         </UButton>
         <UButton v-if="!isRoomMaster" size="lg" color="red" variant="solid" @click="leaveMatch">

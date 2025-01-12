@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="max-w-screen-sm mx-auto relative bg-gradient-to-br from-[#2a2e31] to-[#202427] text-white">
     <template v-if="isEnteredMatch">
       <ScreenMatch v-if="isStarted" />
       <ScreenLobby v-else @start="handleStartMatch" />

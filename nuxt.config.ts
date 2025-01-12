@@ -5,6 +5,7 @@ export default defineNuxtConfig({
   devtools: {
     enabled: true,
   },
+  ssr: false,
   appConfig: {
     firebase: {
       apiKey: process.env.FIREBASE_API_KEY,

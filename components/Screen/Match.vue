@@ -1,5 +1,5 @@
 <template>
-  <div class="relative flex justify-center items-center w-screen h-dvh overflow-hidden">
+  <div class="relative flex justify-center items-center h-dvh overflow-hidden">
     <AssetsBoard
       :show-head-placeholder="!isMatchOver && isPlayerTurn && possiblyPlacedOnHead"
       :show-tail-placeholder="!isMatchOver && isPlayerTurn && possiblyPlacedOnTail"
@@ -19,8 +19,8 @@
     />
 
     <div class="absolute text-center bottom-0 w-full">
-      <div class="flex flex-col items-center md:flex-row-reverse">
-        <div class="flex justify-center grow gap-3 p-2 md:justify-end md:gap-4 md:p-4">
+      <div class="flex flex-col items-center">
+        <div class="flex justify-center grow gap-3 p-2">
           <AssetsDomino
             v-for="card in currentPlayer.cards"
             :key="card"
@@ -71,7 +71,7 @@ import {
 } from '#imports'
 
 const route = useRoute()
-const { $db, $viewport } = useNuxtApp()
+const { $db } = useNuxtApp()
 const { t } = useI18n()
 const { user } = useUser()
 const toast = useToast()
@@ -97,6 +97,7 @@ const matchId = route.params.id as string
 const turnState = ref<TURN_STATE>(TURN_STATE.pickCard)
 const selectedCard = ref('')
 const unsubGameplay = ref()
+const cardSize = ref(40)
 
 const otherPlayers = computed<TMatchPlayer[]>(() => {
   const idx = playerIdx.value
@@ -117,7 +118,6 @@ const selectableCards = computed<string[]>(() => {
 
 const possiblyPlacedOnHead = computed(() => selectableCards.value.some(c => c.includes(head.value)))
 const possiblyPlacedOnTail = computed(() => selectableCards.value.some(c => c.includes(tail.value)))
-const cardSize = computed(() => ($viewport.isGreaterOrEquals('md') ? 70 : 40))
 
 const isSelectable = (card: string) => isPlayerTurn.value && selectableCards.value.includes(card)
 

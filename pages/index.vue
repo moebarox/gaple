@@ -1,6 +1,6 @@
 <!-- TODO: add analytics -->
 <template>
-  <div class="w-screen h-dvh flex flex-col items-center justify-center gap-8">
+  <div class="max-w-screen-sm mx-auto h-dvh flex flex-col items-center justify-center gap-8 relative bg-gradient-to-br from-[#2a2e31] to-[#202427] text-white">
     <img src="/images/logo.png" alt="logo" class="w-[300px]" />
     <div class="flex flex-col justify-center gap-4 w-full p-4 md:flex-row">
       <div class="grow md:grow-0">
@@ -121,7 +121,7 @@ const createMatch = async () => {
     expireAt: Timestamp.fromDate(expireAt),
   })
   router.replace({
-    name: 'id',
+    name: 'match-id',
     params: {
       id: docRef.id,
     },
@@ -154,7 +154,7 @@ const joinMatch = () => {
   }
 
   router.push({
-    name: 'id',
+    name: 'match-id',
     params: {
       id: matchId.value,
     },

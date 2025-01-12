@@ -1,33 +1,31 @@
 <template>
   <div
-    class="p-2 text-center md:p-4"
+    class="p-2 text-center"
     :class="{
       'absolute left-0 h-full': isPositionLeft,
       'absolute top-0': isPositionTop,
       'absolute right-0 h-full': isPositionRight,
-      relative: isPositionBottom,
+      'relative': isPositionBottom,
     }"
   >
     <div
       class="flex items-center justify-center h-full"
       :class="{
         'flex-col': isPositionLeft || isPositionRight,
-        'md:justify-start': isPositionBottom,
       }"
     >
       <div
-        class="relative flex gap-2 md:flex-row md:gap-3"
+        class="relative flex gap-2"
         :class="{
-          'items-end md:items-start md:flex-row-reverse': isPositionRight,
-          'items-center md:items-start': isPositionTop || isPositionBottom,
+          'items-end': isPositionRight,
+          'items-center': isPositionTop || isPositionBottom,
           'flex-col': isPositionLeft || isPositionRight,
         }"
       >
         <div
-          class="relative w-12 h-12 rounded-full shadow-lg md:w-20 md:h-20"
+          class="relative w-12 h-12 rounded-full shadow-lg"
           :class="{
-            'before:w-full before:h-full before:absolute before:top-0 before:left-0 before:rounded-full before:animate-ping before:bg-gray-600':
-              isHighlighted,
+            'outline outline-4 outline-yellow-400 outline-offset-2': isHighlighted,
           }"
         >
           <UAvatar
@@ -42,13 +40,13 @@
         </div>
 
         <div
-          class="flex flex-col gap-1 md:gap-2"
+          class="flex flex-col gap-1"
           :class="{
             'items-start text-left': isPositionTop || isPositionLeft || isPositionBottom,
             'items-end text-right': isPositionRight,
           }"
         >
-          <div class="text-ellipsis overflow-hidden font-bold max-w-20 md:text-lg">{{ player.name }}</div>
+          <div class="text-ellipsis overflow-hidden font-bold max-w-20">{{ player.name }}</div>
           <div
             class="flex gap-1"
             :class="{
