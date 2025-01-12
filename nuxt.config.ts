@@ -21,7 +21,9 @@ export default defineNuxtConfig({
     baseURL: process.env.BASE_URL,
     head: {
       title: TITLE,
-      link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
+      link: [
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      ],
       meta: [
         { name: 'description', content: DESCRIPTION },
         { name: 'og:title', content: TITLE },
@@ -36,7 +38,7 @@ export default defineNuxtConfig({
       viewport: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no',
     },
   },
-  modules: ['@nuxt/ui', '@nuxtjs/i18n', 'nuxt-viewport'],
+  modules: ['@nuxt/ui', '@nuxtjs/i18n'],
   css: ['~/assets/css/main.css'],
   routeRules: {
     '*': { ssr: false },
@@ -68,22 +70,6 @@ export default defineNuxtConfig({
         file: 'en-US.json',
       },
     ],
-  },
-  viewport: {
-    breakpoints: {
-      xs: 320,
-      sm: 640,
-      md: 768,
-      lg: 1024,
-      xl: 1280,
-      '2xl': 1536,
-    },
-    defaultBreakpoints: {
-      desktop: 'lg',
-      mobile: 'xs',
-      tablet: 'md',
-    },
-    fallbackBreakpoint: 'lg',
   },
   imports: {
     dirs: ['constants/**/*.ts', 'types/**/*.ts'],
